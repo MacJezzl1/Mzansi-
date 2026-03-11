@@ -1,0 +1,2445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Mzansi Shuffle v5 — CapeChain Labs</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#05070e;--bg0:#070912;--bg1:#0b0e1c;--bg2:#0f1326;--bg3:#151b35;
+  --felt:#0a2a17;--felt2:#0e3822;--gold:#c8942a;--gold2:#e8b440;--gold3:#f8d56a;
+  --goldX:rgba(200,148,42,.15);--glow:rgba(200,148,42,.35);
+  --crim:#b82424;--red2:#e73c3c;--teal:#14b898;--lime:#22c55e;--cob:#3b72e8;
+  --ivory:#ece0c8;--dim:rgba(236,224,200,.35);--dim2:rgba(236,224,200,.18);
+  --pow:#9b59f5;--pow2:#bf8cff;--warn:#f59e0b;
+  --cw:clamp(50px,11vw,68px);--ch:clamp(76px,16.5vw,100px);--r:9px;--rr:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100dvh;overflow-x:hidden}
+body{font-family:'Barlow',sans-serif;background:var(--bg1);color:var(--ivory);
+  background-image:radial-gradient(ellipse 110% 50% at 50% -5%,rgba(200,148,42,.09) 0%,transparent 60%),
+    radial-gradient(ellipse 55% 28% at 8% 100%,rgba(20,184,152,.06) 0%,transparent 55%),
+    radial-gradient(ellipse 45% 22% at 92% 88%,rgba(184,36,36,.05) 0%,transparent 50%);}
+body::before{content:'';position:fixed;top:0;left:0;right:0;height:4px;z-index:9999;
+  background:repeating-linear-gradient(90deg,var(--gold) 0 8px,var(--crim) 8px 16px,var(--ivory) 16px 18px,var(--cob) 18px 26px,var(--ivory) 26px 28px,var(--teal) 28px 36px,var(--ivory) 36px 38px,var(--gold) 38px 46px);}
+body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:4px;z-index:9999;
+  background:repeating-linear-gradient(90deg,var(--teal) 0 8px,var(--gold) 8px 16px,var(--bg3) 16px 18px,var(--crim) 18px 26px,var(--ivory) 26px 28px,var(--cob) 28px 36px,var(--gold) 36px 38px,var(--bg3) 38px 46px);}
+
+.ad-strip{width:100%;min-height:32px;background:linear-gradient(90deg,rgba(5,7,14,.97),rgba(10,13,24,.97));
+  border-bottom:1px solid rgba(200,148,42,.12);display:flex;align-items:center;justify-content:center;
+  font-size:8px;letter-spacing:3px;color:var(--dim2);text-transform:uppercase;padding:6px;position:relative;overflow:hidden;}
+.ad-strip.bot{border-bottom:none;border-top:1px solid rgba(200,148,42,.12);}
+.ad-strip::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0,transparent 22px,rgba(200,148,42,.03) 22px,rgba(200,148,42,.03) 23px);pointer-events:none;}
+
+#hdr{text-align:center;padding:10px 12px 2px;position:relative;}
+#hdr h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,7vw,3rem);font-weight:900;letter-spacing:4px;line-height:1;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold3) 45%,var(--gold2) 75%,var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 22px rgba(200,148,42,.4));}
+.hdr-sub{font-size:8px;letter-spacing:3.5px;color:var(--dim);text-transform:uppercase;margin-top:1px;font-family:'Barlow Condensed',sans-serif;}
+.hdr-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;flex-wrap:wrap;}
+.hdr-badge{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;}
+.hdr-coins{background:rgba(200,148,42,.15);border:1px solid rgba(200,148,42,.4);color:var(--gold2);}
+.hdr-round{background:rgba(21,27,53,.8);border:1px solid rgba(255,255,255,.1);color:var(--dim);}
+.hdr-btns{position:absolute;right:10px;top:10px;display:flex;gap:5px;}
+.icon-btn{width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.06);color:var(--ivory);font-size:13px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+.icon-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);}
+
+#scoreboard{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:8px 12px;
+  background:linear-gradient(180deg,rgba(21,27,53,.95) 0%,rgba(11,14,28,.95) 100%);
+  border-bottom:1px solid rgba(200,148,42,.12);border-top:1px solid rgba(200,148,42,.08);}
+.sc-player{text-align:left;}.sc-ai{text-align:right;}
+.sc-name{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:2px;}
+.sc-pts{font-family:'Cinzel',serif;font-size:clamp(1.3rem,5vw,2rem);font-weight:700;line-height:1;}
+.sc-pts.lit{color:var(--gold3);text-shadow:0 0 16px var(--glow);}.sc-pts.dim{color:var(--dim2);}
+.sc-meta{font-size:9px;color:var(--dim);margin-top:1px;font-family:'Barlow Condensed',sans-serif;}
+.sc-mid{text-align:center;}.sc-mid .rnd{font-family:'Cinzel',serif;font-size:clamp(.6rem,2.4vw,.8rem);font-weight:700;color:var(--gold2);}
+.sc-mid .dk{font-size:8px;color:var(--dim2);margin-top:2px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;}
+
+#turn-bar{text-align:center;padding:5px 12px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;transition:background .3s,color .3s;}
+#turn-bar.pturn{background:rgba(20,184,152,.12);color:var(--teal);border-bottom:1px solid rgba(20,184,152,.2);}
+#turn-bar.aiturn{background:rgba(184,36,36,.1);color:var(--red2);border-bottom:1px solid rgba(184,36,36,.18);}
+.r1-badge{font-size:8px;padding:2px 7px;border-radius:10px;background:rgba(245,158,11,.18);border:1px solid rgba(245,158,11,.4);color:var(--warn);letter-spacing:1px;}
+
+#combo-bar{display:none;text-align:center;padding:4px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;
+  letter-spacing:2px;text-transform:uppercase;background:rgba(155,89,245,.15);border-bottom:1px solid rgba(155,89,245,.25);
+  color:var(--pow2);animation:combo-flash .4s ease;}
+#combo-bar.show{display:block;}
+#streak-bar{display:none;justify-content:center;gap:3px;padding:3px;background:rgba(155,89,245,.06);}
+#streak-bar.show{display:flex;}
+.streak-dot{width:6px;height:6px;border-radius:50%;background:rgba(155,89,245,.25);}
+.streak-dot.lit{background:var(--pow);box-shadow:0 0 6px var(--pow);}
+
+#ai-zone{padding:8px 12px 4px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+#ai-info{flex:1;min-width:0;}
+.ai-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red2);opacity:.7;}
+#ai-taunt{font-size:10px;color:rgba(231,76,60,.7);font-style:italic;margin-top:1px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;animation:taunt-in .3s ease;}
+#ai-hand{display:flex;gap:3px;overflow-x:auto;scrollbar-width:none;max-width:calc(100% - 110px);}
+#ai-hand::-webkit-scrollbar{display:none;}
+#ai-pile-info{display:flex;flex-direction:column;align-items:flex-end;gap:3px;min-width:70px;}
+.pile-counter{display:flex;align-items:center;gap:4px;background:rgba(21,27,53,.9);border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;padding:4px 7px;cursor:pointer;transition:all .2s;}
+.pile-counter:hover{border-color:rgba(200,148,42,.4);background:rgba(200,148,42,.08);}
+.pile-counter.active{border-color:var(--gold);background:rgba(200,148,42,.15);}
+.pile-counter.steal-mode{border-color:var(--crim);background:rgba(184,36,36,.15);}
+.pc-num{font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--ivory);}
+.pc-lbl{font-size:7.5px;letter-spacing:1px;color:var(--dim);text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;}
+.pc-icon{font-size:10px;}
+
+#ai-pile-spread{display:none;padding:6px 12px;background:rgba(184,36,36,.06);border-bottom:1px solid rgba(184,36,36,.2);}
+#ai-pile-spread.open{display:block;}
+.pile-spread-title{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red2);margin-bottom:5px;}
+#ai-pile-cards{display:flex;gap:4px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none;}
+#ai-pile-cards::-webkit-scrollbar{display:none;}
+
+#table-zone{padding:8px 12px;}
+.zone-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.zone-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim2);}
+#tbl-ct{font-size:9px;color:var(--dim2);font-family:'Barlow Condensed',sans-serif;}
+#table-area{min-height:clamp(100px,18vw,130px);
+  background:radial-gradient(ellipse 90% 80% at 50% 50%,var(--felt2),var(--felt));
+  border-radius:12px;border:1px solid rgba(20,184,152,.18);
+  box-shadow:inset 0 0 30px rgba(0,0,0,.5),0 0 1px rgba(20,184,152,.12);
+  display:flex;flex-wrap:wrap;gap:5px;padding:8px;align-content:flex-start;position:relative;overflow:hidden;}
+#table-area::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(20,184,152,.04),transparent);pointer-events:none;}
+
+#player-zone{padding:4px 12px 6px;}
+.hand-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.hand-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);}
+.view-all-btn{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  padding:3px 8px;border-radius:6px;cursor:pointer;background:rgba(20,184,152,.12);border:1px solid rgba(20,184,152,.3);color:var(--teal);transition:all .2s;}
+.view-all-btn:hover{background:rgba(20,184,152,.22);}
+#player-hand{display:flex;gap:5px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin;scrollbar-color:rgba(200,148,42,.3) transparent;}
+#player-hand::-webkit-scrollbar{height:3px;}
+#player-hand::-webkit-scrollbar-track{background:transparent;}
+#player-hand::-webkit-scrollbar-thumb{background:rgba(200,148,42,.3);border-radius:3px;}
+
+#actions{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:4px 12px 6px;}
+.action-btn{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  padding:9px 6px;border-radius:10px;border:1px solid transparent;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:5px;}
+.action-btn:disabled{opacity:.28;cursor:not-allowed;}
+#btn-place{background:rgba(59,114,232,.15);border-color:rgba(59,114,232,.35);color:#7aa4f5;}
+#btn-capture{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.35);color:#4ade80;}
+#btn-build{background:rgba(200,148,42,.15);border-color:rgba(200,148,42,.35);color:var(--gold2);}
+#btn-extend{background:rgba(155,89,245,.15);border-color:rgba(155,89,245,.35);color:var(--pow2);}
+#btn-undo{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.25);color:var(--warn);font-size:9px;}
+#btn-clear{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);color:var(--dim);font-size:9px;}
+.action-btn:not(:disabled):hover{filter:brightness(1.2);transform:translateY(-1px);}
+.action-btn:not(:disabled):active{transform:translateY(0);}
+
+#hint{margin:0 12px 4px;padding:6px 10px;border-radius:8px;font-size:10px;line-height:1.4;color:var(--dim);
+  background:rgba(21,27,53,.7);border:1px solid rgba(255,255,255,.07);min-height:28px;transition:all .25s;font-family:'Barlow',sans-serif;}
+
+#powerups{display:flex;gap:6px;padding:4px 12px 6px;overflow-x:auto;scrollbar-width:none;}
+#powerups::-webkit-scrollbar{display:none;}
+.pu-btn{flex-shrink:0;font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  padding:5px 10px;border-radius:20px;cursor:pointer;background:rgba(155,89,245,.12);border:1px solid rgba(155,89,245,.3);
+  color:var(--pow2);white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:4px;}
+.pu-btn:hover:not(:disabled){background:rgba(155,89,245,.22);transform:translateY(-1px);}
+.pu-btn:disabled{opacity:.3;cursor:not-allowed;}
+.pu-cost{font-size:8px;opacity:.7;}
+.pu-btn.used{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08);color:var(--dim);}
+
+#music-toggle{display:flex;align-items:center;gap:5px;margin:2px 12px 0;padding:5px 10px;border-radius:8px;cursor:pointer;
+  background:rgba(21,27,53,.6);border:1px solid rgba(255,255,255,.08);font-family:'Barlow Condensed',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);transition:all .2s;width:fit-content;}
+#music-toggle:hover{background:rgba(21,27,53,.9);border-color:rgba(200,148,42,.3);}
+#music-panel{max-height:0;overflow:hidden;transition:max-height .4s ease;margin:0 12px;border-radius:0 0 10px 10px;}
+#music-panel.open{max-height:500px;}
+#music-iframe{width:100%;height:450px;border:none;border-radius:10px;margin-top:4px;}
+
+.card{width:var(--cw);height:var(--ch);border-radius:var(--r);flex-shrink:0;position:relative;cursor:pointer;
+  transition:transform .15s,box-shadow .15s,outline .1s;animation:deal .3s ease both;}
+@keyframes deal{from{opacity:0;transform:translateY(-18px) scale(.9)}to{opacity:1;transform:none}}
+.card.face-down{background:repeating-linear-gradient(135deg,#1a2240 0 5px,#1e2850 5px 10px);
+  border:1px solid rgba(255,255,255,.1);box-shadow:2px 2px 8px rgba(0,0,0,.5);}
+.card.face-down::after{content:'🃏';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(14px,3.5vw,20px);opacity:.3;}
+.card.face-up{background:linear-gradient(155deg,#f9f6ee 0%,#f0e8d0 100%);border:1px solid rgba(0,0,0,.15);box-shadow:2px 3px 10px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.9);}
+.card.face-up.red .cv,.card.face-up.red .cs,.card.face-up.red .cc{color:#c0202a;}
+.card.face-up.black .cv,.card.face-up.black .cs,.card.face-up.black .cc{color:#1a1a2e;}
+.cv{font-family:'Barlow Condensed',sans-serif;font-size:clamp(11px,2.4vw,15px);font-weight:800;line-height:1;}
+.cs{font-size:clamp(9px,2vw,12px);line-height:1;}
+.cc{font-size:clamp(18px,4.5vw,28px);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+.cbot{position:absolute;bottom:3px;right:3px;transform:rotate(180deg);line-height:1;}
+.ctop{position:absolute;top:3px;left:3px;line-height:1;}
+
+.card.sel{outline:2px solid var(--gold);box-shadow:0 0 14px rgba(200,148,42,.6),2px 3px 10px rgba(0,0,0,.4);transform:translateY(-6px) scale(1.04);z-index:2;}
+.card.contrib{outline:2px solid var(--teal);box-shadow:0 0 14px rgba(20,184,152,.55),2px 3px 10px rgba(0,0,0,.4);transform:translateY(-4px) scale(1.02);z-index:2;}
+.card.tsel{outline:2px solid var(--cob);box-shadow:0 0 14px rgba(59,114,232,.5),2px 3px 10px rgba(0,0,0,.4);transform:scale(1.03);z-index:2;}
+.card.capturable{outline:1px dashed rgba(34,197,94,.5);box-shadow:0 0 8px rgba(34,197,94,.25);animation:pulse-cap 1.8s ease infinite;}
+@keyframes pulse-cap{0%,100%{box-shadow:0 0 6px rgba(34,197,94,.2)}50%{box-shadow:0 0 14px rgba(34,197,94,.5)}}
+.card.pile-steal{outline:2px solid var(--crim);box-shadow:0 0 12px rgba(184,36,36,.5);transform:translateY(-4px);}
+.card.wild-card{outline:2px solid var(--pow)!important;box-shadow:0 0 18px rgba(155,89,245,.6)!important;animation:wild-pulse 2s ease infinite!important;}
+@keyframes wild-pulse{0%,100%{box-shadow:0 0 12px rgba(155,89,245,.4)}50%{box-shadow:0 0 24px rgba(155,89,245,.8)}}
+.card.inkosi{background:linear-gradient(155deg,#fff9ee 0%,#fff3cc 100%)!important;outline:2px solid var(--gold)!important;box-shadow:0 0 16px rgba(200,148,42,.5)!important;}
+.card-badge{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:5.5px;font-weight:900;letter-spacing:1px;text-transform:uppercase;
+  padding:1.5px 4px;border-radius:3px;font-family:'Barlow Condensed',sans-serif;pointer-events:none;z-index:3;white-space:nowrap;}
+.declare-badge{background:var(--gold);color:#000;}
+.contrib-badge{background:var(--teal);color:#000;}
+.wild-badge{background:var(--pow);color:#fff;}
+
+.build-wrap{border-radius:10px;border:1px solid rgba(200,148,42,.4);
+  background:linear-gradient(145deg,rgba(30,36,70,.95),rgba(18,22,50,.95));
+  padding:5px 6px;cursor:pointer;transition:all .2s;animation:deal .3s ease both;min-width:var(--cw);max-width:calc(var(--cw)*2.2);}
+.build-wrap.ai-own{border-color:rgba(184,36,36,.45);background:linear-gradient(145deg,rgba(60,20,20,.95),rgba(30,10,10,.95));}
+.build-wrap.tsel{outline:2px solid var(--cob);box-shadow:0 0 14px rgba(59,114,232,.4);}
+.build-wrap.capturable{outline:1px dashed rgba(34,197,94,.5);animation:pulse-cap 1.8s ease infinite;}
+.build-wrap.shielded{outline:2px solid var(--pow);box-shadow:0 0 14px rgba(155,89,245,.4);}
+.build-wrap.newly{animation:newly-glow .6s ease both;}
+@keyframes newly-glow{0%{box-shadow:0 0 30px rgba(200,148,42,.8)}100%{box-shadow:none}}
+.bv{font-family:'Cinzel',serif;font-size:clamp(1rem,3.5vw,1.4rem);font-weight:900;color:var(--gold2);line-height:1;}
+.bowner{font-size:7px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;font-family:'Barlow Condensed',sans-serif;margin-bottom:3px;}
+.bowner.p{color:var(--teal);}.bowner.a{color:var(--red2);}
+.bcombos{display:flex;flex-direction:column;gap:2px;margin:2px 0;}
+.bcombo{display:flex;align-items:center;gap:2px;flex-wrap:wrap;}
+.bchip{font-size:8px;font-weight:700;padding:1px 3px;border-radius:3px;font-family:'Barlow Condensed',sans-serif;}
+.bchip.r{background:rgba(199,32,42,.2);color:#f47070;}.bchip.b{background:rgba(26,26,46,.6);color:#9ab0d0;}
+.chip-plus{font-size:7px;color:var(--dim2);}
+.btotal{font-size:7px;color:var(--dim2);margin-top:1px;font-family:'Barlow Condensed',sans-serif;}
+
+#toast{position:fixed;top:50px;left:50%;transform:translateX(-50%) translateY(-20px);
+  background:rgba(10,13,24,.96);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:8px 14px;
+  font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ivory);
+  z-index:9000;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.ok{border-color:rgba(34,197,94,.5);color:var(--lime);}
+#toast.err{border-color:rgba(184,36,36,.5);color:var(--red2);}
+#toast.warn{border-color:rgba(200,148,42,.5);color:var(--gold2);}
+#toast.info{border-color:rgba(59,114,232,.5);color:#7aa4f5;}
+#toast.pow{border-color:rgba(155,89,245,.5);color:var(--pow2);}
+
+#sweep-txt{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.5);
+  font-family:'Cinzel',serif;font-size:clamp(2rem,8vw,4rem);font-weight:900;color:var(--gold3);text-shadow:0 0 40px var(--glow);
+  pointer-events:none;opacity:0;z-index:8000;letter-spacing:4px;text-align:center;transition:none;}
+#sweep-txt.boom{animation:sweep-boom .9s ease forwards;}
+@keyframes sweep-boom{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.3)}}
+
+#score-pop-layer{position:fixed;inset:0;pointer-events:none;z-index:7500;}
+.score-pop{position:absolute;font-family:'Cinzel',serif;font-size:clamp(1.1rem,4vw,1.6rem);font-weight:900;pointer-events:none;animation:score-up 1.2s ease forwards;text-shadow:0 0 20px currentColor;}
+@keyframes score-up{0%{opacity:0;transform:translateY(0) scale(.7)}30%{opacity:1;transform:translateY(-20px) scale(1.1)}70%{opacity:.9;transform:translateY(-50px) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(.8)}}
+
+#round-banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Cinzel',serif;
+  font-size:clamp(1.5rem,6vw,2.8rem);font-weight:900;color:var(--gold3);text-shadow:0 0 30px var(--glow);
+  pointer-events:none;opacity:0;z-index:7800;letter-spacing:6px;text-align:center;white-space:nowrap;}
+#round-banner.flash{animation:banner-in .9s ease forwards;}
+@keyframes banner-in{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.1)}}
+
+#particle-canvas{position:fixed;inset:0;pointer-events:none;z-index:7000;}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:10000;
+  display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-sheet{background:linear-gradient(180deg,var(--bg3) 0%,var(--bg1) 100%);border-radius:18px 18px 0 0;
+  border:1px solid rgba(255,255,255,.1);border-bottom:none;width:100%;max-width:520px;max-height:90dvh;
+  display:flex;flex-direction:column;transform:translateY(30px);transition:transform .25s;overflow:hidden;}
+.modal-overlay.open .modal-sheet{transform:translateY(0);}
+.modal-drag{width:40px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:10px auto 0;}
+.modal-head{padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;}
+.modal-title{font-family:'Cinzel',serif;font-size:clamp(.95rem,3.8vw,1.25rem);font-weight:700;color:var(--gold2);letter-spacing:2px;}
+.modal-close{width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:var(--ivory);font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.modal-body{flex:1;overflow-y:auto;padding:12px 16px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;}
+.modal-body::-webkit-scrollbar{width:4px;}
+.modal-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
+
+#end-modal .modal-sheet{background:linear-gradient(160deg,rgba(8,10,20,.98),rgba(12,16,34,.98));}
+.end-icon{font-size:clamp(2.5rem,10vw,4rem);text-align:center;margin:8px 0;}
+.end-title{font-family:'Cinzel',serif;font-size:clamp(1.4rem,6vw,2.4rem);font-weight:900;text-align:center;letter-spacing:4px;}
+.end-title.win{color:var(--gold3);text-shadow:0 0 24px var(--glow);}.end-title.lose{color:var(--red2);}.end-title.tie{color:var(--teal);}
+.end-sub{text-align:center;font-size:12px;color:var(--dim);margin:4px 0 12px;}
+.erow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:11px;}
+.erow.hdr{font-size:9px;color:var(--dim2);letter-spacing:1px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;}
+.erow.tot{font-weight:800;font-family:'Cinzel',serif;color:var(--gold2);font-size:13px;border-top:1px solid rgba(200,148,42,.3);border-bottom:none;padding-top:8px;}
+.erow.coins-row{color:var(--gold);font-size:10px;border-bottom:none;}
+.eval{text-align:right;min-width:24px;font-family:'Barlow Condensed',sans-serif;font-weight:700;}
+
+.rule-section{margin-bottom:14px;}
+.rule-section h3{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold2);margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid rgba(200,148,42,.2);}
+.rule-item{display:flex;gap:8px;margin-bottom:5px;font-size:11px;line-height:1.5;color:var(--dim);}
+.rule-num{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:rgba(200,148,42,.15);border:1px solid rgba(200,148,42,.35);color:var(--gold2);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:9px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.rule-hl{color:var(--gold3);font-weight:600;}
+.unique-badge{display:inline-block;font-size:7px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:1px 5px;border-radius:4px;background:rgba(155,89,245,.2);border:1px solid rgba(155,89,245,.4);color:var(--pow2);margin-right:4px;font-family:'Barlow Condensed',sans-serif;}
+
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.stat-card{background:rgba(21,27,53,.8);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px;text-align:center;}
+.stat-val{font-family:'Cinzel',serif;font-size:clamp(1.3rem,5vw,1.8rem);font-weight:700;color:var(--gold2);}
+.stat-lbl{font-size:9px;color:var(--dim2);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;font-family:'Barlow Condensed',sans-serif;}
+.ach-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.ach-card{background:rgba(21,27,53,.8);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;transition:all .3s;}
+.ach-card.unlocked{border-color:rgba(200,148,42,.4);background:rgba(200,148,42,.08);}
+.ach-icon{font-size:18px;margin-bottom:2px;}
+.ach-name{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--dim);}
+.ach-desc{font-size:8.5px;color:var(--dim2);line-height:1.4;}
+.ach-card.unlocked .ach-name{color:var(--gold2);}
+
+#braai-notice{display:none;margin:0 12px 4px;padding:5px 10px;border-radius:8px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--warn);text-align:center;}
+#braai-notice.show{display:block;}
+
+#peek-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9500;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;}
+#peek-overlay.show{display:flex;}
+.peek-title{font-family:'Cinzel',serif;font-size:clamp(1rem,4vw,1.4rem);font-weight:900;color:var(--pow2);letter-spacing:3px;text-align:center;}
+.peek-timer{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:800;color:var(--pow);}
+.peek-cards{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:0 12px;}
+.peek-sub{font-size:11px;color:var(--dim2);font-style:italic;}
+
+#ach-notif{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(30px);
+  background:rgba(200,148,42,.15);border:1px solid rgba(200,148,42,.5);border-radius:12px;padding:8px 14px;
+  display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;
+  z-index:9000;opacity:0;pointer-events:none;transition:all .3s;max-width:90vw;}
+#ach-notif.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.an-icon{font-size:20px;}.an-text{display:flex;flex-direction:column;}
+.an-name{font-size:12px;font-weight:800;letter-spacing:1.5px;color:var(--gold3);}
+.an-desc{font-size:9px;color:var(--dim);letter-spacing:.5px;}
+
+#coin-overlay{position:fixed;inset:0;background:rgba(5,7,14,.97);z-index:9200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;}
+#coin-overlay.hidden{display:none;}
+.coin-title{font-family:'Cinzel',serif;font-size:clamp(1.1rem,5vw,1.8rem);font-weight:900;color:var(--gold2);letter-spacing:4px;text-align:center;}
+.coin-sub{font-size:11px;color:var(--dim);text-align:center;max-width:280px;line-height:1.6;}
+#coin-wrap{font-size:clamp(3rem,14vw,5.5rem);cursor:pointer;animation:coin-float 2s ease infinite;transition:transform .15s;}
+@keyframes coin-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+#coin-wrap:active{transform:scale(.9);}
+#coin-wrap.flipping{animation:coin-spin .4s linear infinite;}
+@keyframes coin-spin{from{transform:rotateY(0)}to{transform:rotateY(360deg)}}
+.coin-result{font-family:'Cinzel',serif;font-size:clamp(1rem,4.5vw,1.5rem);font-weight:900;letter-spacing:3px;text-align:center;color:var(--ivory);animation:fade-in .4s ease;}
+@keyframes fade-in{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+.coin-result-icon{font-size:3rem;display:block;margin-bottom:4px;}
+.diff-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.diff-btn{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:8px 18px;border-radius:20px;cursor:pointer;background:rgba(21,27,53,.8);border:1px solid rgba(255,255,255,.15);color:var(--dim);transition:all .2s;}
+.diff-btn.d-easy.active{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.5);color:var(--lime);}
+.diff-btn.d-medium.active{background:rgba(200,148,42,.15);border-color:rgba(200,148,42,.5);color:var(--gold2);}
+.diff-btn.d-hard.active{background:rgba(184,36,36,.15);border-color:rgba(184,36,36,.5);color:var(--red2);}
+#start-btn{font-family:'Cinzel',serif;font-size:14px;font-weight:700;letter-spacing:2px;padding:12px 32px;border-radius:12px;cursor:pointer;background:linear-gradient(135deg,rgba(200,148,42,.3),rgba(200,148,42,.15));border:1px solid rgba(200,148,42,.6);color:var(--gold3);box-shadow:0 0 20px rgba(200,148,42,.2);transition:all .2s;display:none;}
+#start-btn.show{display:block;animation:fade-in .3s ease;}
+#start-btn:hover{box-shadow:0 0 30px rgba(200,148,42,.4);transform:translateY(-2px);}
+.view-all-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:8px;}
+
+@keyframes taunt-in{from{opacity:0;transform:translateX(-10px)}to{opacity:.7;transform:none}}
+@keyframes combo-flash{from{background:rgba(155,89,245,.3)}to{background:rgba(155,89,245,.12)}}
+@keyframes shake{0%,100%{transform:none}20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
+.shaking{animation:shake .4s ease;}
+
+/* ────── v5 CARD SPECIALS ────── */
+.card.sacred{outline:2px solid #a855f7!important;animation:sacred-pulse 1.6s ease infinite!important;}
+.card.sacred::before{content:'🔮';position:absolute;top:-8px;right:-8px;font-size:10px;z-index:5;pointer-events:none;}
+@keyframes sacred-pulse{0%,100%{box-shadow:0 0 8px rgba(168,85,247,.4),2px 3px 10px rgba(0,0,0,.4)}50%{box-shadow:0 0 26px rgba(168,85,247,.9),2px 3px 10px rgba(0,0,0,.4)}}
+.card.ghost-card{opacity:.7!important;outline:2px dashed rgba(148,163,184,.7)!important;animation:ghost-float 2.5s ease infinite!important;}
+.card.ghost-card::before{content:'👻';position:absolute;top:-8px;right:-8px;font-size:10px;z-index:5;pointer-events:none;}
+@keyframes ghost-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.card.trapped-card{outline:2px solid #ef4444!important;box-shadow:0 0 14px rgba(239,68,68,.55)!important;}
+.card.trapped-card::before{content:'👺';position:absolute;top:-8px;right:-8px;font-size:10px;z-index:5;pointer-events:none;}
+.card.blesser-card{outline:2px solid #10b981!important;box-shadow:0 0 14px rgba(16,185,129,.55)!important;}
+.card.blesser-card::before{content:'💰';position:absolute;top:-8px;right:-8px;font-size:10px;z-index:5;pointer-events:none;}
+.build-wrap.guarded{outline:2px solid var(--gold)!important;box-shadow:0 0 14px rgba(200,148,42,.4)!important;}
+
+/* ────── VUVUZELA BANNER ────── */
+#vuvu-banner{display:none;position:fixed;top:4px;left:0;right:0;z-index:8500;pointer-events:none;
+  background:linear-gradient(90deg,rgba(234,179,8,.28),rgba(234,179,8,.18),rgba(234,179,8,.28));
+  border-bottom:2px solid rgba(234,179,8,.65);padding:5px;
+  font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:2px;
+  text-align:center;color:#fde047;text-transform:uppercase;}
+#vuvu-banner.show{display:block;}
+#btn-capture.vuvu-ready{background:rgba(234,179,8,.25)!important;border-color:rgba(234,179,8,.6)!important;color:#fde047!important;animation:vuvu-btn .8s ease infinite!important;}
+@keyframes vuvu-btn{0%,100%{box-shadow:none}50%{box-shadow:0 0 18px rgba(234,179,8,.55)}}
+
+/* ────── EISH BUTTON ────── */
+#eish-wrap{display:none;position:fixed;bottom:96px;left:50%;transform:translateX(-50%);z-index:8800;text-align:center;}
+#eish-wrap.show{display:block;animation:eish-bounce .3s cubic-bezier(.17,.67,.35,1.3);}
+@keyframes eish-bounce{from{transform:translateX(-50%) scale(.4)}to{transform:translateX(-50%) scale(1)}}
+#eish-btn{font-family:'Cinzel',serif;font-size:17px;font-weight:900;letter-spacing:2px;
+  padding:13px 28px;border-radius:14px;cursor:pointer;background:rgba(220,38,38,.9);
+  border:2px solid rgba(252,165,165,.7);color:#fff;animation:eish-pulse .5s ease infinite;}
+@keyframes eish-pulse{0%,100%{box-shadow:0 0 18px rgba(220,38,38,.6)}50%{box-shadow:0 0 45px rgba(220,38,38,1)}}
+#eish-timer{font-size:11px;color:rgba(252,165,165,.8);margin-top:4px;font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;}
+
+/* ────── LIGHTNING ROUND ────── */
+#lightning-strip{display:none;text-align:center;padding:4px;
+  font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;
+  background:linear-gradient(90deg,rgba(245,158,11,.22),rgba(234,179,8,.15),rgba(245,158,11,.22));
+  border-bottom:1px solid rgba(245,158,11,.45);color:#fde047;}
+#lightning-strip.show{display:block;}
+body.lightning #turn-bar{box-shadow:0 0 20px rgba(245,158,11,.35)!important;}
+
+/* ────── NDLOVU TRACKER ────── */
+#ndlovu{display:flex;align-items:center;gap:5px;margin:0 12px 4px;padding:5px 10px;border-radius:8px;
+  background:rgba(21,27,53,.6);border:1px solid rgba(255,255,255,.07);}
+#ndlovu.complete{border-color:var(--gold);background:rgba(200,148,42,.1);}
+.nd-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim2);}
+.nd-ten{font-size:11px;opacity:.22;transition:all .35s;filter:grayscale(1);}
+.nd-ten.got{opacity:1;filter:none;text-shadow:0 0 10px rgba(248,213,106,.9);}
+#ndlovu .nd-pts{margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-size:9px;color:var(--dim2);}
+#ndlovu.complete .nd-pts{color:var(--gold2);}
+
+/* ────── KASI DICE ROLL ────── */
+#kasi-roll{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:9300;pointer-events:none;font-size:clamp(4rem,15vw,7rem);
+  animation:kasi-spin 1s ease both;filter:drop-shadow(0 0 30px rgba(200,148,42,.8));}
+@keyframes kasi-spin{0%{transform:translate(-50%,-50%) scale(.2) rotate(0);opacity:0}
+  60%{transform:translate(-50%,-50%) scale(1.15) rotate(600deg);opacity:1}
+  100%{transform:translate(-50%,-50%) scale(1) rotate(720deg)}}
+#kasi-result{display:none;margin:0 12px 4px;padding:5px 10px;border-radius:8px;
+  font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
+#kasi-result.player{background:rgba(20,184,152,.1);border:1px solid rgba(20,184,152,.3);color:var(--teal);}
+#kasi-result.ai{background:rgba(184,36,36,.1);border:1px solid rgba(184,36,36,.3);color:var(--red2);}
+#kasi-result.show{display:block;}
+
+/* ────── WIN STREAK ────── */
+#win-streak{display:none;margin:0 12px 4px;padding:5px 10px;border-radius:8px;
+  background:rgba(155,89,245,.08);border:1px solid rgba(155,89,245,.25);
+  font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--pow2);text-align:center;}
+#win-streak.show{display:block;}
+
+/* ────── TOWNSHIP HUSTLE ────── */
+#hustle-strip{display:none;align-items:center;gap:6px;margin:0 12px 4px;padding:5px 10px;border-radius:8px;
+  background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.22);}
+#hustle-strip.show{display:flex;}
+.hustle-icon{font-size:13px;}.hustle-text{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#10b981;}
+.hustle-coins{margin-left:auto;font-family:'Cinzel',serif;font-size:13px;color:#10b981;}
+.hustle-pop{position:fixed;font-family:'Cinzel',serif;font-size:1rem;font-weight:900;
+  color:#10b981;text-shadow:0 0 10px rgba(16,185,129,.8);pointer-events:none;z-index:7600;
+  animation:score-up 1.2s ease forwards;}
+
+/* ────── UBUNTU CHAIN ────── */
+#ubuntu-chain-strip{display:none;align-items:center;gap:6px;margin:0 12px 4px;padding:5px 10px;border-radius:8px;
+  background:rgba(20,184,152,.06);border:1px solid rgba(20,184,152,.22);}
+#ubuntu-chain-strip.show{display:flex;}
+.uc-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);}
+.uc-dots{display:flex;gap:3px;margin-left:6px;}.uc-dot{width:8px;height:8px;border-radius:50%;background:rgba(20,184,152,.18);border:1px solid rgba(20,184,152,.3);}
+.uc-dot.lit{background:var(--teal);box-shadow:0 0 6px var(--teal);}
+.uc-mult{margin-left:auto;font-family:'Cinzel',serif;font-size:12px;color:var(--teal);}
+
+/* ────── NOTICES ────── */
+.game-notice{display:none;margin:0 12px 4px;padding:5px 10px;border-radius:8px;
+  font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-align:center;}
+.game-notice.show{display:block;}
+#braai-notice{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--warn);}
+#lobola-notice{background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);color:#fb923c;}
+#trap-notice{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171;}
+
+/* ────── EVENT LOG ────── */
+#log-toggle{font-size:8px;letter-spacing:1px;color:var(--dim2);text-align:center;padding:2px 12px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;user-select:none;}
+#event-log{display:flex;flex-direction:column;gap:2px;max-height:0;overflow:hidden;margin:0 12px;transition:max-height .3s;}
+#event-log.open{max-height:90px;}
+.evlog{font-family:'Barlow Condensed',sans-serif;font-size:9px;color:var(--dim2);padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.03);border-left:2px solid rgba(200,148,42,.2);animation:ev-in .2s ease;}
+@keyframes ev-in{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.evlog.hot{color:var(--gold2);border-left-color:var(--gold);}
+
+/* ────── BONUS POP ────── */
+.bonus-pop{position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:9000;
+  font-family:'Cinzel',serif;font-size:clamp(1.2rem,5vw,2rem);font-weight:900;white-space:nowrap;
+  animation:bpop 1.6s ease forwards;}
+@keyframes bpop{0%{opacity:0;transform:translate(-50%,-50%) scale(.5) rotate(-8deg)}
+  35%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(2deg)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(.95)}}
+</style>
+
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+<style>
+/* ── AD SLOTS ── */
+#ad-top{width:100%;min-height:50px;background:rgba(5,7,14,.9);border-bottom:1px solid rgba(200,148,42,.12);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+#ad-bottom{width:100%;min-height:60px;background:rgba(5,7,14,.95);border-top:1px solid rgba(200,148,42,.12);display:flex;align-items:center;justify-content:center;overflow:hidden;position:fixed;bottom:0;left:0;z-index:5000;}
+.ad-label{font-family:'Barlow Condensed',sans-serif;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.15);text-transform:uppercase;text-align:center;padding:4px;width:100%;}
+/* Push content above fixed bottom ad */
+#main-wrap{padding-bottom:70px;}
+/* Reward ad overlay */
+#reward-overlay{display:none;position:fixed;inset:0;z-index:9900;background:rgba(0,0,0,.92);align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+#reward-overlay.show{display:flex;}
+#reward-ad-box{width:clamp(300px,90vw,400px);background:var(--bg2);border:1px solid rgba(200,148,42,.3);border-radius:16px;padding:24px;text-align:center;}
+#reward-countdown{font-family:'Cinzel',serif;font-size:2.5rem;font-weight:900;color:var(--gold);margin:8px 0;}
+#reward-title{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim2);margin-bottom:12px;}
+#reward-skip{display:none;margin-top:16px;padding:10px 24px;border-radius:10px;background:rgba(200,148,42,.15);border:1px solid rgba(200,148,42,.35);color:var(--gold2);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
+#reward-skip.show{display:inline-block;}
+.no-ads-btn{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim2);border:none;background:none;cursor:pointer;padding:4px 8px;text-decoration:underline;}
+.no-ads-btn:hover{color:var(--gold2);}
+</style>
+</head>
+<body onclick="SoundEngine&&SoundEngine.unlock()">
+<canvas id="particle-canvas"></canvas>
+<div id="sweep-txt"></div>
+<div id="round-banner"></div>
+<div id="score-pop-layer"></div>
+<div id="toast"></div>
+<div id="ach-notif"><span class="an-icon" id="an-icon">🏆</span><div class="an-text"><span class="an-name" id="an-name">Achievement</span><span class="an-desc" id="an-desc"></span></div></div>
+
+<div id="coin-overlay">
+  <div class="coin-title">MZANSI SHUFFLE</div>
+  <div class="coin-sub">40-Card South African Casino · CapeChain Labs<br>Capture cards, build combos, outsmart Zola.</div>
+  <div id="coin-wrap" onclick="flipCoin()">🪙</div>
+  <div id="coin-result"></div>
+  <div class="diff-row">
+    <button class="diff-btn d-easy" onclick="setDiff('easy')">🟢 Easy</button>
+    <button class="diff-btn d-medium active" onclick="setDiff('medium')">🟡 Medium</button>
+    <button class="diff-btn d-hard" onclick="setDiff('hard')">🔴 Hard</button>
+  </div>
+  <button id="start-btn" onclick="startGame(_firstPlayer)">▶ Start Game</button>
+</div>
+
+<div id="peek-overlay">
+  <div class="peek-title">🔮 ZOLA'S HAND</div>
+  <div class="peek-sub">Expires in:</div>
+  <div class="peek-timer" id="peek-timer">3</div>
+  <div class="peek-cards" id="peek-cards"></div>
+</div>
+
+<div class="ad-strip">🃏 CapeChain Labs · Mzansi Shuffle v5 · 40-Card Casino</div>
+<div id="hdr">
+  <h1>MZANSI SHUFFLE</h1>
+  <div class="hdr-sub">CapeChain Labs · v5</div>
+  <div class="hdr-row">
+    <div class="hdr-badge hdr-coins">🪙 <span id="coins-val">500</span></div>
+    <div class="hdr-badge hdr-round">Round <span id="round-num">1</span></div>
+    <div id="deck-left" class="hdr-badge hdr-round">40 left</div>
+    <div id="streak-badge" class="hdr-badge" style="display:none;background:rgba(155,89,245,.15);border:1px solid rgba(155,89,245,.4);color:var(--pow2)">🔥 <span id="streak-num">0</span> streak</div>
+  </div>
+  <div class="hdr-btns">
+    <div class="icon-btn" onclick="openModal('rules-modal')" title="Rules">❓</div>
+    <div class="icon-btn" onclick="openStatsModal()" title="Stats">📊</div>
+    <div class="icon-btn" id="snd-btn" onclick="SoundEngine.toggle()" title="Sound">🔊</div>
+    <div class="icon-btn" onclick="toggleMusic()" title="Music">♫</div>
+  </div>
+</div>
+
+<div id="scoreboard">
+  <div class="sc-player"><div class="sc-name">⚡ You</div><div class="sc-pts dim" id="p-score">0</div><div class="sc-meta" id="p-meta">0 cards · 0 sweeps</div></div>
+  <div class="sc-mid"><div class="rnd" id="sc-rnd">R1</div><div class="dk" id="deck-info">40 cards</div></div>
+  <div class="sc-ai"><div class="sc-name">🤖 Zola</div><div class="sc-pts dim" id="ai-score">0</div><div class="sc-meta" id="ai-meta">0 cards · 0 sweeps</div></div>
+</div>
+
+<div id="turn-bar" class="pturn"><span id="turn-text">⚡ Your Turn</span></div>
+<div id="combo-bar"></div>
+<div id="streak-bar"></div>
+
+<div id="ai-zone">
+  <div id="ai-info"><div class="ai-label">🤖 Zola · <span id="ai-hc">0</span> cards</div><div id="ai-taunt"></div></div>
+  <div id="ai-hand"></div>
+  <div id="ai-pile-info">
+    <div class="pile-counter" id="ai-pile-btn" onclick="toggleAiPile()">
+      <div><div class="pc-num" id="ai-pile-ct">0</div><div class="pc-lbl">AI Pile</div></div>
+      <div class="pc-icon">🃏</div>
+    </div>
+    <div style="font-size:7px;color:var(--dim2);text-align:right;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;">tap to steal</div>
+  </div>
+</div>
+
+<div id="ai-pile-spread">
+  <div class="pile-spread-title">🫳 Steal from Zola's Pile — tap cards to include in your build</div>
+  <div id="ai-pile-cards"></div>
+</div>
+
+<div id="table-zone">
+  <div class="zone-hdr"><div class="zone-label">🎰 Table</div><div id="tbl-ct">Empty</div></div>
+  <div id="table-area"></div>
+</div>
+
+<div id="braai-notice">🔥 BRAAI TAX — 8+ cards on table. Must capture or build!</div>
+
+<div id="vuvu-banner">🎺 VUVUZELA MODE — Next capture scores DOUBLE! 🎺</div>
+<div id="lightning-strip">⚡ LIGHTNING ROUND — Builds = +1 pt each! ⚡</div>
+<div id="eish-wrap">
+  <button id="eish-btn" onclick="triggerEish()">😤 EISH!</button>
+  <div id="eish-timer">Challenge ends in: <span id="eish-count">5</span>s</div>
+</div>
+<div id="kasi-roll"></div>
+
+<div id="ndlovu" style="display:none">
+  <span class="nd-label">🐘 Ndlovu:</span>
+  <span class="nd-ten" id="nd-s">10♠</span>
+  <span class="nd-ten" id="nd-h">10♥</span>
+  <span class="nd-ten" id="nd-d">10♦</span>
+  <span class="nd-ten" id="nd-c">10♣</span>
+  <span class="nd-pts">+5pts if all 4</span>
+</div>
+<div id="kasi-result"></div>
+<div id="win-streak"></div>
+<div id="hustle-strip">
+  <span class="hustle-icon">⚡</span>
+  <span class="hustle-text">Township Hustle</span>
+  <span class="hustle-coins">+<span id="hustle-val">0</span>🪙</span>
+</div>
+<div id="ubuntu-chain-strip">
+  <span class="uc-label">🤝 Ubuntu Chain</span>
+  <div class="uc-dots">
+    <div class="uc-dot" id="uc1"></div>
+    <div class="uc-dot" id="uc2"></div>
+    <div class="uc-dot" id="uc3"></div>
+  </div>
+  <span class="uc-mult" id="uc-mult"></span>
+</div>
+<div id="braai-notice" class="game-notice">🔥 BRAAI TAX — 8+ cards on table. Must capture or build!</div>
+<div id="lobola-notice" class="game-notice">💍 LOBOLA SWAP — Tap a hand card, then a table card to swap</div>
+<div id="trap-notice" class="game-notice">👺 TOKOLOSHE TRAP — Tap a table card to place the trap</div>
+<div id="log-toggle" onclick="toggleLog()">▾ event log</div>
+<div id="event-log"></div>
+<div id="player-zone">
+  <div class="hand-hdr">
+    <div class="hand-label">Your Hand · <span id="p-hc">0</span></div>
+    <button class="view-all-btn" onclick="openViewAll()">VIEW ALL</button>
+  </div>
+  <div id="player-hand"></div>
+</div>
+
+<div id="actions">
+  <button class="action-btn" id="btn-capture" onclick="Actions.capture()" disabled>⚡ Capture</button>
+  <button class="action-btn" id="btn-build" onclick="Actions.build()" disabled>🏗 Build</button>
+  <button class="action-btn" id="btn-extend" onclick="Actions.extend()" disabled>➕ Extend</button>
+  <button class="action-btn" id="btn-place" onclick="Actions.place()" disabled>▶ Place</button>
+  <button class="action-btn" id="btn-undo" onclick="doUndo()" disabled style="font-size:9px">↩ Undo</button>
+  <button class="action-btn" id="btn-clear" onclick="clearSel();UILayer.render();" style="font-size:9px">✕ Clear</button>
+</div>
+
+<div id="hint">Tap a card from your hand to start</div>
+<div id="powerups">
+  <button class="pu-btn" id="pu-peek" onclick="usePowerUp('peek')">🔮 Peek <span class="pu-cost">(50🪙)</span></button>
+  <button class="pu-btn" id="pu-toyi" onclick="usePowerUp('toyi')">✊ Toyi-Toyi <span class="pu-cost">(75🪙)</span></button>
+  <button class="pu-btn" id="pu-shield" onclick="usePowerUp('shield')">🛡 Ubuntu Shield <span class="pu-cost">(60🪙)</span></button>
+  <button class="pu-btn" id="pu-braai" onclick="usePowerUp('braai')">🍖 Braai Break <span class="pu-cost">(90🪙)</span></button>
+  <button class="pu-btn" id="pu-lobola" onclick="usePowerUp('lobola')">💍 Lobola Swap <span class="pu-cost">(40🪙)</span></button>
+  <button class="pu-btn" id="pu-trap" onclick="usePowerUp('trap')">👺 Tokoloshe Trap <span class="pu-cost">(65🪙)</span></button>
+  <button class="pu-btn" id="pu-sangoma" onclick="usePowerUp('sangoma')">🌿 Sangoma Vision <span class="pu-cost">(55🪙)</span></button>
+  <button class="pu-btn" style="background:rgba(234,179,8,.12);border-color:rgba(234,179,8,.4);color:#fde047;" onclick="watchAdForCoins()">📺 Watch Ad <span class="pu-cost">(+200🪙)</span></button>
+</div>
+
+<div id="music-toggle" onclick="toggleMusic()">♫ Deep House Playlist</div>
+<div id="music-panel"><iframe id="music-iframe" allow="autoplay *; encrypted-media *;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation" frameborder="0"></iframe></div>
+<div class="ad-strip bot">Advertising Space · capechainlabs.co.za</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="end-modal">
+  <div class="modal-sheet"><div class="modal-drag"></div>
+    <div style="padding:16px;">
+      <div class="end-icon" id="end-icon">🏆</div>
+      <div class="end-title" id="end-title">VICTORY!</div>
+      <div class="end-sub" id="end-sub"></div>
+      <div id="end-bd"></div>
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+        <button class="action-btn" style="flex:1;background:rgba(200,148,42,.2);border-color:rgba(200,148,42,.5);color:var(--gold2);font-size:12px;" onclick="closeModal('end-modal');newGame()">🔄 New Game</button>
+        <button class="action-btn" style="flex:1;font-size:12px;" onclick="openStatsModal()">📊 Stats</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="rules-modal">
+  <div class="modal-sheet"><div class="modal-drag"></div>
+    <div class="modal-head"><div class="modal-title">📖 HOW TO PLAY</div><div class="modal-close" onclick="closeModal('rules-modal')">✕</div></div>
+    <div class="modal-body">
+      <div class="rule-section"><h3>🎯 Objective</h3>
+        <div class="rule-item"><div class="rule-num">1</div><div>Capture cards from the table. Score points for most cards <span class="rule-hl">(3pts)</span>, most spades <span class="rule-hl">(1pt)</span>, Aces <span class="rule-hl">(1pt each)</span>, 2♠ Big Casino <span class="rule-hl">(1pt)</span>, 10♦ <span class="rule-hl">(2pts)</span>, sweeps <span class="rule-hl">(1pt each)</span>.</div></div>
+      </div>
+      <div class="rule-section"><h3>🃏 Basic Actions</h3>
+        <div class="rule-item"><div class="rule-num">1</div><div><span class="rule-hl">DECLARE:</span> Tap a hand card — stays in hand, sets your target value.</div></div>
+        <div class="rule-item"><div class="rule-num">2</div><div><span class="rule-hl">CAPTURE:</span> Tap table cards or a build equalling your card's value, then hit Capture.</div></div>
+        <div class="rule-item"><div class="rule-num">3</div><div><span class="rule-hl">BUILD:</span> Tap contrib card from hand (teal) + table cards summing to declared value. No builds in Round 1.</div></div>
+        <div class="rule-item"><div class="rule-num">4</div><div><span class="rule-hl">EXTEND:</span> Add more cards to your existing build. Declared card stays in hand.</div></div>
+        <div class="rule-item"><div class="rule-num">5</div><div><span class="rule-hl">PLACE:</span> Play your declared card onto the table. Last resort.</div></div>
+      </div>
+      <div class="rule-section"><h3>🌍 Original Mzansi Rules</h3>
+        <div class="rule-item"><div class="rule-num">★</div><div><span class="unique-badge">INKOSI</span> Ace of Spades is the Chief. Capturing it = <span class="rule-hl">+3 bonus points</span>.</div></div>
+        <div class="rule-item"><div class="rule-num">★</div><div><span class="unique-badge">UBUNTU BUILD</span> Use <span class="rule-hl">5+ cards</span> in one build move = bonus sweep point. Unity is strength.</div></div>
+        <div class="rule-item"><div class="rule-num">★</div><div><span class="unique-badge">BRAAI TAX</span> <span class="rule-hl">8+ cards</span> on table? Cannot PLACE — must capture or build.</div></div>
+        <div class="rule-item"><div class="rule-num">★</div><div><span class="unique-badge">WILD CARD</span> One purple card per game counts as <span class="rule-hl">any value</span> for builds.</div></div>
+      </div>
+      <div class="rule-section"><h3>🆕 New Features v5</h3>
+        <div class="rule-item"><div class="rule-num">🔮</div><div><span class="unique-badge">SANGOMA SACRED</span> One table card pulses purple each round — capture it for <span class="rule-hl">+2 bonus pts</span>.</div></div>
+        <div class="rule-item"><div class="rule-num">🎺</div><div><span class="unique-badge">VUVUZELA MODE</span> 3 consecutive captures = Vuvuzela! Button turns gold. Next capture = <span class="rule-hl">DOUBLE score</span>.</div></div>
+        <div class="rule-item"><div class="rule-num">😤</div><div><span class="unique-badge">EISH COUNTER</span> When Zola sweeps, an <span class="rule-hl">EISH!</span> button flashes for 5 seconds. Tap it for a coin-flip challenge — win = sweep cancelled!</div></div>
+        <div class="rule-item"><div class="rule-num">🐘</div><div><span class="unique-badge">NDLOVU TROPHY</span> Collect all <span class="rule-hl">four 10s</span> = <span class="rule-hl">+5 bonus pts</span> at game end. Track them above your hand.</div></div>
+        <div class="rule-item"><div class="rule-num">👻</div><div><span class="unique-badge">GHOST CARD</span> One ghosted card = <span class="rule-hl">any value</span> can capture it. Normal capture rules skipped.</div></div>
+        <div class="rule-item"><div class="rule-num">⚡</div><div><span class="unique-badge">LIGHTNING ROUND</span> Every <span class="rule-hl">3rd round</span> is Lightning. All builds that round score <span class="rule-hl">+1 pt each</span> at game end.</div></div>
+        <div class="rule-item"><div class="rule-num">🎲</div><div><span class="unique-badge">KASI DICE</span> Each round a dice rolls at the start. High (4–6) = your builds +1 this round. Low (1–3) = Zola's builds +1.</div></div>
+        <div class="rule-item"><div class="rule-num">⚡</div><div><span class="unique-badge">TOWNSHIP HUSTLE</span> When Zola is forced to place, you earn <span class="rule-hl">1 coin per table card</span>. Hustle the hustle.</div></div>
+        <div class="rule-item"><div class="rule-num">💰</div><div><span class="unique-badge">BLESSER CARD</span> Have the <span class="rule-hl">5♦</span> in your pile when game ends = <span class="rule-hl">+3 bonus pts</span>.</div></div>
+        <div class="rule-item"><div class="rule-num">🤝</div><div><span class="unique-badge">UBUNTU CHAIN</span> Extend the same build <span class="rule-hl">3 times</span> in one game = all your builds scored <span class="rule-hl">×2</span>.</div></div>
+        <div class="rule-item"><div class="rule-num">👑</div><div><span class="unique-badge">INKOSI GUARD</span> While holding Ace♠ in hand, Zola <span class="rule-hl">cannot steal your builds</span>.</div></div>
+      </div>
+      <div class="rule-section"><h3>⚡ Power-Ups (once per game each)</h3>
+        <div class="rule-item"><div class="rule-num">🔮</div><div><span class="rule-hl">Peek (50🪙):</span> See Zola's full hand for 3 seconds.</div></div>
+        <div class="rule-item"><div class="rule-num">✊</div><div><span class="rule-hl">Toyi-Toyi (75🪙):</span> Force Zola to place her weakest card next turn.</div></div>
+        <div class="rule-item"><div class="rule-num">🛡</div><div><span class="rule-hl">Ubuntu Shield (60🪙):</span> Protect your builds from capture for 1 turn.</div></div>
+        <div class="rule-item"><div class="rule-num">🍖</div><div><span class="rule-hl">Braai Break (90🪙):</span> Zola skips her next turn.</div></div>
+        <div class="rule-item"><div class="rule-num">💍</div><div><span class="rule-hl">Lobola Swap (40🪙):</span> Swap one hand card with one table card.</div></div>
+        <div class="rule-item"><div class="rule-num">👺</div><div><span class="rule-hl">Tokoloshe Trap (65🪙):</span> Trap a table card — if Zola captures it, steal 2 of her captured cards back.</div></div>
+        <div class="rule-item"><div class="rule-num">🌿</div><div><span class="rule-hl">Sangoma Vision (55🪙):</span> Flip the top 2 deck cards face-up onto the table for free info.</div></div>
+      </div>
+      <div class="rule-section"><h3>🫳 Stealing from AI</h3>
+        <div class="rule-item"><div class="rule-num">1</div><div>Tap Zola's pile counter to reveal her captured cards.</div></div>
+        <div class="rule-item"><div class="rule-num">2</div><div>Tap cards in the spread to mark them STEAL (red highlight).</div></div>
+        <div class="rule-item"><div class="rule-num">3</div><div>Use them in a BUILD or EXTEND — they get consumed from her pile.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="stats-modal">
+  <div class="modal-sheet"><div class="modal-drag"></div>
+    <div class="modal-head"><div class="modal-title">📊 STATS & ACHIEVEMENTS</div><div class="modal-close" onclick="closeModal('stats-modal')">✕</div></div>
+    <div class="modal-body" id="stats-body"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="view-all-modal">
+  <div class="modal-sheet"><div class="modal-drag"></div>
+    <div class="modal-head"><div class="modal-title">🃏 YOUR HAND</div><div class="modal-close" onclick="closeModal('view-all-modal')">✕</div></div>
+    <div class="modal-body">
+      <div style="font-size:10px;color:var(--dim);margin-bottom:10px;">Tap a card to select it. Syncs with main board.</div>
+      <div class="view-all-grid" id="view-all-grid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ═══ MODULE 1 — STATE ═══ */
+const State = (() => {
+  let _id = 1;
+  const uid = () => _id++;
+  const initial = () => ({
+    deck:[], playerHand:[], aiHand:[],
+    table:[], playerCapture:[], aiCapture:[],
+    playerScore:0, aiScore:0, playerSweeps:0, aiSweeps:0,
+    turn:'player', firstPlayer:'player', round:1, phase:'coin',
+    diff:'medium', coins:500, noAds:false, _snapshot:null,
+    selHand:null, selContribs:[], selTable:[], selAiPile:[],
+    wildCardId:null,
+    shieldActive:false, toyiActive:false, braaiActive:false,
+    inkosiBonusAwarded:false,
+    // v5 features
+    sacredCardId:null,   ghostCardId:null,
+    vuvuzelaMode:false,  vuvuzelaStreak:0,
+    lightningRound:false, lightningBuilds:0,
+    ndlovuTens:new Set(),
+    kasiBonus:null,       // 'player'|'ai'|null
+    hustleCoins:0,
+    ubuntuChainBuildId:null, ubuntuChainCount:0, ubuntuChainDouble:false,
+    trappedCardId:null,
+    lobolaMode:false, lobolaHandIdx:null,
+    trapMode:false,
+    v:{canPlace:false,canCapture:false,canBuild:false,buildVal:null,buildCombos:null,canExtend:false,extBuild:null,extCombos:null}
+  });
+  let _s = initial();
+  return {
+    get(){ return _s; },
+    reset(){ _s = initial(); },
+    uid,
+    snapshot(){
+      _s._snapshot = JSON.parse(JSON.stringify({
+        deck:_s.deck,playerHand:_s.playerHand,aiHand:_s.aiHand,
+        table:_s.table,playerCapture:_s.playerCapture,aiCapture:_s.aiCapture,
+        playerSweeps:_s.playerSweeps,aiSweeps:_s.aiSweeps,round:_s.round,turn:_s.turn,
+        selHand:_s.selHand,selContribs:[..._s.selContribs],selTable:[..._s.selTable],selAiPile:[..._s.selAiPile],
+      }));
+    },
+    restore(){
+      if(!_s._snapshot) return false;
+      const sn=_s._snapshot;
+      _s.deck=sn.deck;_s.playerHand=sn.playerHand;_s.aiHand=sn.aiHand;
+      _s.table=sn.table;_s.playerCapture=sn.playerCapture;_s.aiCapture=sn.aiCapture;
+      _s.playerSweeps=sn.playerSweeps;_s.aiSweeps=sn.aiSweeps;_s.round=sn.round;_s.turn=sn.turn;
+      _s.selHand=sn.selHand;_s.selContribs=sn.selContribs||[];_s.selTable=sn.selTable;_s.selAiPile=sn.selAiPile||[];
+      _s._snapshot=null;
+      return true;
+    }
+  };
+})();
+
+/* ═══ MODULE 2 — BUILD ENGINE ═══ */
+const BuildEngine = {
+  findCombinations(cards, target){
+    const results=[]; const n=cards.length;
+    for(let mask=1;mask<(1<<n);mask++){
+      let sum=0; const combo=[];
+      for(let b=0;b<n;b++) if(mask&(1<<b)){sum+=cards[b].value;combo.push(cards[b]);}
+      if(sum===target) results.push(combo);
+    }
+    return results;
+  },
+  partitionAll(cards, target){
+    if(!cards.length) return null;
+    const total=cards.reduce((a,c)=>a+c.value,0);
+    if(total%target!==0) return null;
+    if(cards.some(c=>c.value>target)) return null;
+    const numGroups=total/target;
+    const sorted=[...cards].sort((a,b)=>b.value-a.value);
+    const groups=Array.from({length:numGroups},()=>[]);
+    const gsums=new Array(numGroups).fill(0);
+    const bt=(pos)=>{
+      if(pos===sorted.length) return gsums.every(s=>s===target);
+      const card=sorted[pos]; const seen=new Set();
+      for(let g=0;g<numGroups;g++){
+        if(seen.has(gsums[g])) continue;
+        if(gsums[g]+card.value>target) continue;
+        seen.add(gsums[g]);
+        groups[g].push(card); gsums[g]+=card.value;
+        if(bt(pos+1)) return true;
+        groups[g].pop(); gsums[g]-=card.value;
+      }
+      return false;
+    };
+    if(!bt(0)) return null;
+    return groups.filter(g=>g.length>0);
+  },
+  canPartitionAll(cards,target){ return this.partitionAll(cards,target)!==null; },
+  makeBuild(value,combinations,owner){
+    return {type:'build',id:State.uid(),value,owner,cards:combinations.flat(),combinations,locked:true};
+  },
+  validateCapture(handCard,items){
+    if(!items.length) return false;
+    if(items.length===1&&items[0].type==='build') return items[0].value===handCard.value;
+    if(items.every(i=>i.type==='card')) return items.reduce((a,c)=>a+c.value,0)===handCard.value;
+    return false;
+  },
+  validateBuild(handCard,items){
+    if(!items.length) return {ok:false,reason:'No cards selected'};
+    if(items.some(i=>i.type==='build')) return {ok:false,reason:'Select only loose cards to build'};
+    const N=handCard.value;
+    const combos=this.partitionAll(items,N);
+    if(!combos) return {ok:false,reason:`Cards can't form groups summing to ${N}`};
+    return {ok:true,value:N,combinations:combos};
+  },
+  validateExtend(handCard,items,extPool){
+    const builds=items.filter(i=>i.type==='build');
+    if(builds.length!==1) return {ok:false,reason:'Select exactly one of your builds'};
+    const build=builds[0];
+    if(build.owner!=='player') return {ok:false,reason:'Can only extend your own build'};
+    if(build.value!==handCard.value) return {ok:false,reason:`Card value doesn't match build value ${build.value}`};
+    const pool=extPool||items.filter(i=>i.type==='card');
+    if(!pool.length) return {ok:false,reason:'Select new cards to add'};
+    const newCombos=this.partitionAll(pool,build.value);
+    if(!newCombos) return {ok:false,reason:`Cards can't form groups of ${build.value}`};
+    return {ok:true,build,newCombinations:newCombos};
+  }
+};
+
+/* ═══ MODULE 3 — GAME ENGINE ═══ */
+const GameEngine = {
+  SUITS:['♠','♥','♦','♣'],
+  createDeck(){
+    const d=[];
+    for(const suit of this.SUITS)
+      for(let v=1;v<=10;v++) d.push({type:'card',suit,value:v,id:State.uid()});
+    return d;
+  },
+  shuffle(arr){
+    const a=[...arr];
+    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+    return a;
+  },
+  startNew(firstPlayer){
+    const s=State.get();
+    s.deck=this.shuffle(this.createDeck());
+    s.table=[];s.playerCapture=[];s.aiCapture=[];
+    s.playerScore=0;s.aiScore=0;s.playerSweeps=0;s.aiSweeps=0;
+    s.round=1;s.phase='playing';s.turn=firstPlayer;s.firstPlayer=firstPlayer;
+    s._snapshot=null;s.shieldActive=false;s.toyiActive=false;s.braaiActive=false;
+    s.inkosiBonusAwarded=false;
+    // v5 resets
+    s.vuvuzelaMode=false;s.vuvuzelaStreak=0;
+    s.lightningRound=false;s.lightningBuilds=0;
+    s.ndlovuTens=new Set();s.kasiBonus=null;s.hustleCoins=0;
+    s.ubuntuChainBuildId=null;s.ubuntuChainCount=0;s.ubuntuChainDouble=false;
+    s.trappedCardId=null;s.lobolaMode=false;s.lobolaHandIdx=null;s.trapMode=false;
+    // Assign special cards (wild, sacred, ghost — all different)
+    const allIds=this.shuffle(s.deck.map(c=>c.id));
+    s.wildCardId=allIds[0];s.sacredCardId=allIds[1];s.ghostCardId=allIds[2];
+    clearSel();
+    this.deal();
+    V5Events.kasiDiceRoll();
+  },
+  deal(){
+    const s=State.get();
+    s.playerHand=[];s.aiHand=[];
+    for(let i=0;i<10;i++){
+      if(s.deck.length) s.playerHand.push(s.deck.pop());
+      if(s.deck.length) s.aiHand.push(s.deck.pop());
+    }
+    setTimeout(()=>Effects.deal(),100);
+  },
+  performCapture(who,handIdx,tableIdxs){
+    const s=State.get();
+    const hand=who==='player'?s.playerHand:s.aiHand;
+    const pile=who==='player'?s.playerCapture:s.aiCapture;
+    const capturedCard=hand.splice(handIdx,1)[0];
+    pile.push(capturedCard);
+    const capturedItems=[];
+    [...tableIdxs].sort((a,b)=>b-a).forEach(i=>{
+      const item=s.table.splice(i,1)[0];
+      capturedItems.push(item);
+      const cards=item.type==='card'?[item]:item.cards;
+      pile.push(...cards);
+      // Tokoloshe Trap: AI captures a trapped card → steal back 2
+      if(who==='ai'&&item.type==='card'&&item.id===s.trappedCardId){
+        s.trappedCardId=null;
+        setTimeout(()=>V5Events.tokolosheActivate(),300);
+      }
+    });
+    if(who==='player'){
+      // Inkosi bonus
+      if(!s.inkosiBonusAwarded&&pile.some(c=>c.suit==='♠'&&c.value===1)){
+        s.inkosiBonusAwarded=true;s.playerScore+=3;
+        Effects.toast('👑 INKOSI CAPTURED! +3 bonus points!','warn');
+        Achievements.check('inkosi');
+      }
+      // Sacred card bonus
+      const allCap=[capturedCard,...capturedItems.flatMap(i=>i.type==='card'?[i]:i.cards)];
+      if(allCap.some(c=>c.id===s.sacredCardId)){
+        s.playerScore+=2;
+        V5Events.bonusPop('🔮 +2 Sacred!','#a855f7');
+        Effects.toast('🔮 Sacred Card! +2 bonus points!','warn');
+        Achievements.check('sacred');
+        EventLog.add('🔮 Sacred Card captured! +2 pts','hot');
+      }
+      // Ndlovu: track 10s
+      allCap.forEach(c=>{
+        if(c.value===10){s.ndlovuTens.add(c.suit);UILayer.updateNdlovu();}
+      });
+      // Vuvuzela
+      s.vuvuzelaStreak++;
+      if(s.vuvuzelaStreak>=3&&!s.vuvuzelaMode){
+        s.vuvuzelaMode=true;
+        const vb=document.getElementById('vuvu-banner');
+        if(vb) vb.className='show';
+        document.getElementById('btn-capture')?.classList.add('vuvu-ready');
+        SoundEngine.powerup();
+        Effects.toast('🎺 VUVUZELA MODE! Next capture = DOUBLE score!','warn');
+        EventLog.add('🎺 Vuvuzela Mode activated!','hot');
+        Achievements.check('vuvuzela');
+      } else if(s.vuvuzelaMode){
+        // Cash out double
+        s.vuvuzelaMode=false;s.vuvuzelaStreak=0;
+        const vb=document.getElementById('vuvu-banner');if(vb) vb.className='';
+        document.getElementById('btn-capture')?.classList.remove('vuvu-ready');
+        s.playerScore+=2;
+        V5Events.bonusPop('🎺 DOUBLE! +2','#fde047');
+        Effects.toast('🎺 VUVUZELA DOUBLE! +2 bonus pts!','warn');
+        EventLog.add('🎺 Vuvuzela double cashed!','hot');
+      }
+      // Blesser card check (5♦) — tracked at score time
+      Stats.record('capture');
+    }
+    if(s.table.length===0){
+      if(who==='player') s.playerSweeps++;
+      else{
+        s.aiSweeps++;
+        // EISH counter activates after AI sweep
+        setTimeout(()=>EishCounter.activate(),400);
+      }
+      Effects.sweep(who);
+    }
+  },
+  endTurn(who){
+    const s=State.get();
+    s.shieldActive=false;
+    s.lobolaMode=false;s.lobolaHandIdx=null;s.trapMode=false;
+    s.turn=who==='player'?'ai':'player';
+    clearSel();
+    // Township Hustle: if it was AI's turn and AI placed (checked via who==='ai')
+    UILayer.render();
+    this.checkRoundEnd();
+    if(s.phase==='playing'&&s.turn==='ai'){
+      if(s.braaiActive){
+        s.braaiActive=false;
+        Effects.toast('🍖 Braai Break! Zola skips this turn.','pow');
+        setTimeout(()=>GameEngine.endTurn('ai'),700);
+      } else {
+        setTimeout(()=>AIEngine.takeTurn(),880);
+      }
+    }
+    UILayer.renderNotices();
+  },
+  checkRoundEnd(){
+    const s=State.get();
+    if(s.playerHand.length||s.aiHand.length) return;
+    if(s.deck.length>0){
+      setTimeout(()=>this.nextRound(),700);
+    } else {
+      if(s.table.length){
+        s.table.forEach(item=>{const cards=item.type==='card'?[item]:item.cards;s.playerCapture.push(...cards);});
+        s.table=[];
+      }
+      setTimeout(()=>this.endGame(),700);
+    }
+  },
+  nextRound(){
+    const s=State.get();
+    s.round++;s.turn=s.firstPlayer;s._snapshot=null;
+    s.vuvuzelaMode=false;s.vuvuzelaStreak=0;
+    const vb=document.getElementById('vuvu-banner');if(vb) vb.className='';
+    document.getElementById('btn-capture')?.classList.remove('vuvu-ready');
+    // Lightning round every 3rd
+    s.lightningRound=(s.round%3===0);
+    // Refresh sacred card from remaining deck
+    const pool=[...s.deck,...s.playerHand,...s.aiHand];
+    if(pool.length) s.sacredCardId=pool[Math.floor(Math.random()*pool.length)].id;
+    clearSel();this.deal();
+    Effects.roundBanner(s.round);
+    if(s.lightningRound){
+      const lb=document.getElementById('lightning-strip');if(lb) lb.className='show';
+      document.body.classList.add('lightning');
+      Effects.toast(`⚡ ROUND ${s.round} — LIGHTNING ROUND! Builds = +1 pt each!`,'warn');
+      EventLog.add(`⚡ Lightning Round ${s.round} started!`,'hot');
+      setTimeout(()=>{const lb=document.getElementById('lightning-strip');if(lb) lb.className='';document.body.classList.remove('lightning');},4000);
+    } else {
+      Effects.toast(`Round ${s.round} — ${s.firstPlayer==='player'?'Your':'AI\'s'} turn first`,'warn');
+    }
+    V5Events.kasiDiceRoll();
+    UILayer.render();
+    if(s.turn==='ai') setTimeout(()=>AIEngine.takeTurn(),960);
+  },
+  endGame(){
+    const s=State.get();
+    s.phase='end';
+    EishCounter.deactivate();
+    const sc=this.score();
+    Stats.record('gameEnd', sc.P.total>sc.A.total?'win':sc.P.total===sc.A.total?'tie':'loss');
+    Achievements.checkEnd(sc);
+    V5Stats.updateStreak(sc.P.total>sc.A.total);
+    setTimeout(()=>{if(sc.P.total>sc.A.total) Effects.win(); else if(sc.A.total>sc.P.total) Effects.lose();},400);
+    UILayer.showEnd(sc);
+  },
+  score(){
+    const s=State.get();
+    const P={cards:0,spades:0,aces:0,twoS:0,tenD:0,sweeps:s.playerSweeps,total:0,inkosi:s.inkosiBonusAwarded?3:0,
+      ndlovu:0,lightning:s.lightningBuilds,blesser:0,chain:0};
+    const A={cards:0,spades:0,aces:0,twoS:0,tenD:0,sweeps:s.aiSweeps,total:0,inkosi:0,ndlovu:0,lightning:0,blesser:0,chain:0};
+    const tally=(pile,bd)=>{
+      bd.cards=pile.length;
+      pile.forEach(c=>{
+        if(c.suit==='♠') bd.spades++;
+        if(c.value===1) bd.aces++;
+        if(c.suit==='♠'&&c.value===2) bd.twoS++;
+        if(c.suit==='♦'&&c.value===10) bd.tenD++;
+      });
+    };
+    tally(s.playerCapture,P); tally(s.aiCapture,A);
+    if(P.cards>A.cards) P.total+=3; else if(A.cards>P.cards) A.total+=3;
+    if(P.spades>A.spades) P.total+=1; else if(A.spades>P.spades) A.total+=1;
+    // Ndlovu: all 4 tens
+    if(s.ndlovuTens.size>=4){P.ndlovu=5;Achievements.check('ndlovu');}
+    // Blesser: 5♦ in pile
+    if(s.playerCapture.some(c=>c.suit==='♦'&&c.value===5)){P.blesser=3;Achievements.check('blesser');}
+    // Ubuntu Chain double — doubles all build-related score (sweeps from ubuntu builds)
+    if(s.ubuntuChainDouble){
+      P.sweeps=Math.round(P.sweeps*1.5);P.chain=P.lightning;
+    }
+    P.total+=P.aces+P.twoS+P.tenD*2+P.sweeps+P.inkosi+P.ndlovu+P.lightning+P.blesser;
+    A.total+=A.aces+A.twoS+A.tenD*2+A.sweeps;
+    s.playerScore=P.total; s.aiScore=A.total;
+    const base=P.total>A.total?120:P.total===A.total?25:-60;
+    const streakBonus=V5Stats.streak>=3?50:0;
+    const delta=base+streakBonus;
+    s.coins=Math.max(0,s.coins+delta+s.hustleCoins);
+    return {P,A,delta,streakBonus,hustleCoins:s.hustleCoins};
+  }
+};
+
+/* ═══ MODULE 4 — SELECTION ═══ */
+const isRed = s => s==='♥'||s==='♦';
+const vl    = v => v===1?'A':String(v);
+
+function clearSel(){
+  const s=State.get();
+  s.selHand=null;s.selContribs=[];s.selTable=[];s.selAiPile=[];
+  const v=s.v;
+  v.canPlace=false;v.canCapture=false;v.canBuild=false;v.buildVal=null;v.buildCombos=null;
+  v.canExtend=false;v.extBuild=null;v.extCombos=null;
+}
+
+function revalidate(){
+  const s=State.get(); const v=s.v;
+  v.canPlace=false;v.canCapture=false;v.canBuild=false;v.buildVal=null;v.buildCombos=null;
+  v.canExtend=false;v.extBuild=null;v.extCombos=null;
+  if(s.selHand===null) return;
+  const hc=s.playerHand[s.selHand];
+  const items=s.selTable.map(i=>s.table[i]);
+  const contribs=s.selContribs.map(i=>s.playerHand[i]);
+  const pileSteals=s.selAiPile.map(i=>s.aiCapture[i]);
+  v.canPlace=(items.length===0&&!contribs.length&&!pileSteals.length);
+  if(!items.length&&!contribs.length&&!pileSteals.length) return;
+  if(!contribs.length&&!pileSteals.length){
+    v.canCapture=BuildEngine.validateCapture(hc,items);
+    // Ghost Card: any hand card can capture it if it's the only item
+    if(!v.canCapture&&items.length===1&&items[0].type==='card'&&items[0].id===s.ghostCardId){
+      v.canCapture=true;
+    }
+  }
+  const tableCards=items.filter(i=>i.type==='card');
+  const hasBuilds=items.some(i=>i.type==='build');
+  if(!hasBuilds&&(tableCards.length>0||contribs.length||pileSteals.length)){
+    const pool=[...contribs,...pileSteals,...tableCards];
+    const bRes=BuildEngine.validateBuild(hc,pool);
+    if(bRes.ok){v.canBuild=true;v.buildVal=bRes.value;v.buildCombos=bRes.combinations;}
+  }
+  if(hasBuilds){
+    const extPool=[...contribs,...pileSteals,...tableCards];
+    const eRes=BuildEngine.validateExtend(hc,items,extPool);
+    if(eRes.ok){v.canExtend=true;v.extBuild=eRes.build;v.extCombos=eRes.newCombinations;}
+  }
+}
+
+function selectHand(idx){
+  const s=State.get();
+  if(s.turn!=='player'||s.phase!=='playing') return;
+  // Lobola mode: pick hand card
+  if(s.lobolaMode){
+    s.lobolaHandIdx=idx;
+    Effects.toast('💍 Hand card selected — now tap a table card to swap','info');
+    UILayer.render();return;
+  }
+  if(s.selHand===null){s.selHand=idx;s.selContribs=[];s.selTable=[];SoundEngine.unlock();Effects.select();revalidate();UILayer.render();return;}
+  if(s.selHand===idx){clearSel();UILayer.render();return;}
+  const ci=s.selContribs.indexOf(idx);
+  if(ci!==-1) s.selContribs.splice(ci,1); else s.selContribs.push(idx);
+  revalidate();UILayer.render();
+}
+
+function selectTable(idx){
+  const s=State.get();
+  if(s.turn!=='player'||s.phase!=='playing') return;
+  const item=s.table[idx];
+  // Lobola mode: swap
+  if(s.lobolaMode){
+    if(s.lobolaHandIdx===null){Effects.toast('💍 Select a hand card first','err');return;}
+    if(item.type!=='card'){Effects.toast('💍 Cannot swap with a build','err');return;}
+    const hCard=s.playerHand[s.lobolaHandIdx];
+    s.playerHand[s.lobolaHandIdx]=item;
+    s.table[idx]=hCard;
+    s.lobolaMode=false;s.lobolaHandIdx=null;
+    Effects.toast(`💍 Lobola Swap! ${vl(hCard.value)}${hCard.suit} ↔ ${vl(item.value)}${item.suit}`,'warn');
+    EventLog.add(`💍 Lobola: ${vl(hCard.value)}${hCard.suit} ↔ ${vl(item.value)}${item.suit}`,'hot');
+    GameEngine.endTurn('player');return;
+  }
+  // Trap mode: set tokoloshe trap
+  if(s.trapMode){
+    if(item.type!=='card'){Effects.toast('👺 Can only trap a loose card','err');return;}
+    s.trappedCardId=item.id;s.trapMode=false;
+    Effects.toast(`👺 Tokoloshe Trap set on ${vl(item.value)}${item.suit}!`,'warn');
+    EventLog.add(`👺 Tokoloshe Trap set on ${vl(item.value)}${item.suit}`,'hot');
+    UILayer.render();UILayer.renderNotices();return;
+  }
+  if(s.selHand===null){Effects.toast('Select a hand card first','err');return;}
+  const pos=s.selTable.indexOf(idx);
+  if(pos===-1) s.selTable.push(idx); else s.selTable.splice(pos,1);
+  revalidate();UILayer.render();
+}
+
+/* ═══ MODULE 5 — PLAYER ACTIONS ═══ */
+const Actions = {
+  place(){
+    const s=State.get();
+    if(!s.v.canPlace||s.selHand===null) return;
+    const tableCardCount=s.table.reduce((a,it)=>a+(it.type==='card'?1:it.cards.length),0);
+    if(tableCardCount>=8){Effects.toast('🔥 BRAAI TAX: Cannot place — must capture or build!','err');return;}
+    State.snapshot();
+    const card=s.playerHand.splice(s.selHand,1)[0];
+    s.table.push(card);
+    Effects.placed('player');
+    Effects.toast(`Placed ${vl(card.value)}${card.suit} on table`);
+    GameEngine.endTurn('player');
+  },
+  capture(){
+    const s=State.get();
+    if(!s.v.canCapture) return;
+    State.snapshot();
+    const n=s.selTable.length;
+    const ghostCapture=n===1&&s.table[s.selTable[0]]?.id===s.ghostCardId;
+    GameEngine.performCapture('player',s.selHand,[...s.selTable]);
+    Effects.capture('player');
+    ComboSystem.add();
+    if(ghostCapture){
+      Effects.toast('👻 Ghost Card captured!','warn');
+      Achievements.check('ghost');
+      V5Events.bonusPop('👻 Ghost!','#94a3b8');
+    } else {
+      Effects.toast(`✅ Captured ${n} item${n!==1?'s':''}!`,'ok');
+    }
+    Achievements.check('capture');
+    GameEngine.endTurn('player');
+  },
+  build(){
+    const s=State.get();
+    if(!s.v.canBuild) return;
+    if(s.round===1){Effects.toast('⚠ Cannot build in Round 1!','err');return;}
+    State.snapshot();
+    const N=s.v.buildVal; const combos=s.v.buildCombos;
+    const totalCards=combos.flat().length+s.selContribs.length;
+    [...s.selTable].sort((a,b)=>b-a).forEach(i=>s.table.splice(i,1));
+    [...s.selContribs].sort((a,b)=>b-a).forEach(ci=>s.playerHand.splice(ci,1));
+    [...s.selAiPile].sort((a,b)=>b-a).forEach(pi=>s.aiCapture.splice(pi,1));
+    const newBuild=BuildEngine.makeBuild(N,combos,'player');
+    newBuild._new=true; s.table.push(newBuild);
+    const stealNote=s.selAiPile.length?` 🫳 Stole ${s.selAiPile.length} from AI!`:'';
+    if(s.selAiPile.length){SoundEngine.steal();Achievements.check('steal');}
+    Effects.buildCreated('player');
+    Stats.record('build');
+    // Lightning round bonus
+    if(s.lightningRound){s.lightningBuilds++;EventLog.add('⚡ Lightning build! +1 pt at game end','hot');}
+    // Kasi dice bonus
+    if(s.kasiBonus==='player'){
+      Effects.toast(`🎲 Kasi Bonus! Build scored +1 from dice!`,'info');
+      s.lightningBuilds++;
+    }
+    // Ubuntu Build Bonus
+    if(totalCards>=5){
+      s.playerSweeps++;
+      Effects.toast(`🌍 Ubuntu Build! ${N} with ${totalCards} cards → +1 sweep bonus!`,'warn');
+      Achievements.check('ubuntu');
+    } else {
+      Effects.toast(`🏗 Build ${N}!${stealNote}`,'warn');
+    }
+    GameEngine.endTurn('player');
+  },
+  extend(){
+    const s=State.get();
+    if(!s.v.canExtend) return;
+    State.snapshot();
+    const build=s.v.extBuild; const newCombos=s.v.extCombos;
+    [...s.selTable].sort((a,b)=>b-a).forEach(i=>s.table.splice(i,1));
+    [...s.selContribs].sort((a,b)=>b-a).forEach(ci=>s.playerHand.splice(ci,1));
+    [...s.selAiPile].sort((a,b)=>b-a).forEach(pi=>s.aiCapture.splice(pi,1));
+    newCombos.forEach(g=>{build.combinations.push(g);build.cards.push(...g);});
+    build._extending=true; s.table.push(build);
+    Effects.buildExtended();
+    if(s.selAiPile.length) SoundEngine.steal();
+    // Ubuntu Chain tracking
+    if(s.ubuntuChainBuildId===build.id){
+      s.ubuntuChainCount++;
+    } else {
+      s.ubuntuChainBuildId=build.id;s.ubuntuChainCount=1;
+    }
+    if(s.ubuntuChainCount>=3&&!s.ubuntuChainDouble){
+      s.ubuntuChainDouble=true;
+      Effects.toast('🤝 UBUNTU CHAIN x3! Builds now score ×2!','warn');
+      V5Events.bonusPop('🤝 UBUNTU CHAIN!','#14b8a6');
+      Achievements.check('ubuntu_chain');
+      EventLog.add('🤝 Ubuntu Chain activated! ×2 scoring','hot');
+    }
+    UILayer.updateUbuntuChain();
+    Effects.toast(`➕ Extended build ${build.value}! (${s.ubuntuChainCount}/3 chain)`,'info');
+    GameEngine.endTurn('player');
+  }
+};
+
+/* ═══ MODULE 6 — AI ENGINE ═══ */
+const AIEngine = {
+  takeTurn(){
+    const s=State.get();
+    if(s.turn!=='ai'||s.phase!=='playing'||!s.aiHand.length) return;
+    if(s.toyiActive){s.toyiActive=false;const m=this.placeLow();this.exec(m,'forced');return;}
+    const move=s.diff==='easy'?this.easy():s.diff==='hard'?this.hard():this.medium();
+    this.exec(move);
+  },
+  exec(move,flag=''){
+    const s=State.get();
+    const isForced=flag==='forced';
+    switch(move.type){
+      case 'capture':
+        if(s.shieldActive){
+          const hasShielded=move.tis.some(ti=>s.table[ti]&&s.table[ti].type==='build'&&s.table[ti].owner==='player');
+          if(hasShielded){Effects.toast('🛡 Ubuntu Shield blocks Zola!','pow');return this.exec(this.placeLow());}
+        }
+        // Inkosi Guard: if player holds Ace♠, AI cannot steal player builds
+        if(s.playerHand.some(c=>c.suit==='♠'&&c.value===1)){
+          const stealsPlayerBuild=move.tis.some(ti=>s.table[ti]&&s.table[ti].type==='build'&&s.table[ti].owner==='player');
+          if(stealsPlayerBuild){Effects.toast('👑 Inkosi Guard! Zola can\'t steal your build!','pow');return this.exec(this.placeLow());}
+        }
+        GameEngine.performCapture('ai',move.hi,move.tis);
+        Effects.aiCapture();AiPersonality.say('capture');
+        Effects.toast(`🤖 Zola captured ${move.tis.length} item${move.tis.length!==1?'s':''}`);
+        break;
+      case 'build':{
+        [...move.tis].sort((a,b)=>b-a).forEach(i=>s.table.splice(i,1));
+        if(move.contribIdx!=null) s.aiHand.splice(move.contribIdx,1);
+        const nb=BuildEngine.makeBuild(move.val,move.combos,'ai');nb._new=true;s.table.push(nb);
+        Effects.buildCreated('ai');AiPersonality.say('build');
+        Effects.toast(`🤖 Zola built ${move.val}`,'warn');
+        break;}
+      case 'extend':{
+        [...move.tis].sort((a,b)=>b-a).forEach(i=>s.table.splice(i,1));
+        move.build.combinations.push(...move.newCombos);move.build.cards.push(...move.newCombos.flat());
+        move.build._extending=true;s.table.push(move.build);
+        Effects.buildExtended();AiPersonality.say('build');
+        Effects.toast(`🤖 Zola extended build ${move.build.value}`,'info');
+        break;}
+      default:
+        s.table.push(s.aiHand.splice(move.hi,1)[0]);
+        Effects.placed('ai');
+        AiPersonality.say('place');
+        Effects.toast('🤖 Zola placed a card');
+        // Township Hustle: player earns coins when AI places
+        if(!isForced) V5Events.townshipHustle();
+    }
+    GameEngine.endTurn('ai');
+  },
+  scoreCapture(items){
+    let sc=0;
+    items.forEach(item=>{
+      const cards=item.type==='card'?[item]:item.cards;
+      cards.forEach(c=>{sc+=c.value;if(c.suit==='♠') sc+=2;if(c.value===1) sc+=5;if(c.suit==='♠'&&c.value===2) sc+=5;if(c.suit==='♦'&&c.value===10) sc+=8;});
+      if(item.type==='build') sc+=6;
+    });
+    const s=State.get(); if(s.table.length===items.length) sc+=30;
+    return sc;
+  },
+  tableSubsets(maxN=6){
+    const s=State.get(); const n=Math.min(s.table.length,maxN); const res=[];
+    for(let mask=1;mask<(1<<n);mask++){
+      const idxs=[];for(let b=0;b<n;b++) if(mask&(1<<b)) idxs.push(b);
+      res.push({idxs,items:idxs.map(i=>s.table[i])});
+    }
+    return res;
+  },
+  bestCapture(hand){
+    let best=null,topSc=-1;
+    for(let hi=0;hi<hand.length;hi++){
+      for(const {idxs,items} of this.tableSubsets(6)){
+        if(!BuildEngine.validateCapture(hand[hi],items)) continue;
+        const sc=this.scoreCapture(items); if(sc>topSc){topSc=sc;best={type:'capture',hi,tis:idxs};}
+      }
+    }
+    return best;
+  },
+  tryBuild(hand){
+    const s=State.get();
+    const risky=(N)=>s._aiDiff==='easy'&&s.playerHand.some(c=>c.value===N);
+    for(let hi=0;hi<hand.length;hi++){
+      const N=hand[hi].value;
+      const loose=s.table.map((it,i)=>({it,i})).filter(({it})=>it.type==='card');
+      if(!loose.length) continue;
+      const ln=loose.length;
+      for(let mask=1;mask<(1<<ln);mask++){
+        const sel=[];for(let b=0;b<ln;b++) if(mask&(1<<b)) sel.push(loose[b]);
+        const combos=BuildEngine.partitionAll(sel.map(x=>x.it),N);
+        if(!combos||risky(N)) continue;
+        return {type:'build',hi,tis:sel.map(x=>x.i),val:N,combos};
+      }
+    }
+    for(let hi=0;hi<hand.length;hi++){
+      const N=hand[hi].value; if(risky(N)) continue;
+      const loose=s.table.map((it,i)=>({it,i})).filter(({it})=>it.type==='card');
+      for(let ci=0;ci<hand.length;ci++){
+        if(ci===hi) continue;const contrib=hand[ci];if(contrib.value===N) continue;
+        const ln=loose.length;
+        for(let mask=0;mask<(1<<ln);mask++){
+          const sel=[];for(let b=0;b<ln;b++) if(mask&(1<<b)) sel.push(loose[b]);
+          const pool=[contrib,...sel.map(x=>x.it)];
+          const combos=BuildEngine.partitionAll(pool,N);
+          if(!combos) continue;
+          return {type:'build',hi,contribIdx:ci,tis:sel.map(x=>x.i),val:N,combos};
+        }
+      }
+    }
+    return null;
+  },
+  tryExtend(hand){
+    const s=State.get();
+    for(const [bi,build] of s.table.entries()){
+      if(build.type!=='build'||build.owner!=='ai') continue;
+      const N=build.value; const hiIdx=hand.findIndex(c=>c.value===N);
+      if(hiIdx<0) continue;
+      const loose=s.table.map((it,i)=>({it,i})).filter(({it,i})=>it.type==='card'&&i!==bi);
+      if(!loose.length) continue;
+      const ln=loose.length;
+      for(let mask=1;mask<(1<<ln);mask++){
+        const sel=[];for(let b=0;b<ln;b++) if(mask&(1<<b)) sel.push(loose[b]);
+        const nc=BuildEngine.partitionAll(sel.map(x=>x.it),N);
+        if(!nc) continue;
+        return {type:'extend',hi:hiIdx,tis:[bi,...sel.map(x=>x.i)],build,newCombos:nc};
+      }
+    }
+    return null;
+  },
+  placeLow(){
+    const hand=State.get().aiHand;
+    let lo=0;for(let i=1;i<hand.length;i++) if(hand[i].value<hand[lo].value) lo=i;
+    return {type:'place',hi:lo};
+  },
+  easy(){
+    State.get()._aiDiff='easy';
+    const s=State.get();
+    for(let hi=0;hi<s.aiHand.length;hi++){
+      const v=s.aiHand[hi].value;
+      for(let ti=0;ti<s.table.length;ti++){
+        const it=s.table[ti];
+        if((it.type==='card'&&it.value===v)||(it.type==='build'&&it.value===v))
+          return {type:'capture',hi,tis:[ti]};
+      }
+    }
+    return {type:'place',hi:Math.floor(Math.random()*s.aiHand.length)};
+  },
+  medium(){
+    State.get()._aiDiff='medium';
+    const s=State.get();
+    const cap=this.bestCapture(s.aiHand); if(cap) return cap;
+    for(let hi=0;hi<s.aiHand.length;hi++){
+      const v=s.aiHand[hi].value;
+      for(let ti=0;ti<s.table.length;ti++){
+        const it=s.table[ti];
+        if(it.type==='build'&&it.owner==='player'&&it.value===v) return {type:'capture',hi,tis:[ti]};
+      }
+    }
+    const bld=this.tryBuild(s.aiHand); if(bld) return bld;
+    return this.placeLow();
+  },
+  hard(){
+    State.get()._aiDiff='hard';
+    const s=State.get();
+    for(let hi=0;hi<s.aiHand.length;hi++){
+      if(!s.table.length) continue;
+      const allIs=s.table.map((_,i)=>i);
+      if(BuildEngine.validateCapture(s.aiHand[hi],s.table)) return {type:'capture',hi,tis:allIs};
+    }
+    for(let hi=0;hi<s.aiHand.length;hi++){
+      const v=s.aiHand[hi].value;
+      for(let ti=0;ti<s.table.length;ti++){
+        const it=s.table[ti];
+        if(it.type==='build'&&it.owner==='player'&&it.value===v) return {type:'capture',hi,tis:[ti]};
+      }
+    }
+    const cap=this.bestCapture(s.aiHand); if(cap) return cap;
+    const ext=this.tryExtend(s.aiHand); if(ext) return ext;
+    const bld=this.tryBuild(s.aiHand); if(bld) return bld;
+    return this.placeLow();
+  }
+};
+
+/* ═══ MODULE 7 — UI LAYER ═══ */
+let _aiPileOpen=false;
+const UILayer = {
+  render(){
+    this.hand('player');this.hand('ai');this.table();this.scoreboard();this.turnBar();this.buttons();this.hint();this.capturePiles();
+    if(_aiPileOpen) this.renderAiPileSpread();
+    const s=State.get();
+    document.getElementById('deck-left').textContent=`${s.deck.length} left`;
+    document.getElementById('deck-info').textContent=`${s.deck.length} cards`;
+    document.getElementById('sc-rnd').textContent=`R${s.round}`;
+    document.getElementById('round-num').textContent=s.round;
+    const tableCardCount=s.table.reduce((a,it)=>a+(it.type==='card'?1:it.cards.length),0);
+    const bn=document.getElementById('braai-notice');
+    if(bn) bn.classList.toggle('show',tableCardCount>=8&&s.turn==='player'&&s.phase==='playing');
+  },
+  renderNotices(){
+    const s=State.get();
+    const ln=document.getElementById('lobola-notice');
+    if(ln) ln.classList.toggle('show',s.lobolaMode);
+    const tn=document.getElementById('trap-notice');
+    if(tn) tn.classList.toggle('show',s.trapMode);
+  },
+  updateNdlovu(){
+    const s=State.get();
+    const map={s:'nd-s',h:'nd-h',d:'nd-d',c:'nd-c'};
+    [['♠','s'],['♥','h'],['♦','d'],['♣','c']].forEach(([suit,k])=>{
+      const el=document.getElementById(map[k]);
+      if(el) el.classList.toggle('got',s.ndlovuTens.has(suit));
+    });
+    const tracker=document.getElementById('ndlovu');
+    if(tracker){
+      tracker.style.display='flex';
+      tracker.classList.toggle('complete',s.ndlovuTens.size>=4);
+    }
+    if(s.ndlovuTens.size>=4){
+      V5Events.bonusPop('🐘 NDLOVU! +5','#f59e0b');
+      EventLog.add('🐘 Ndlovu Trophy complete! +5 pts at game end','hot');
+      Achievements.check('ndlovu');
+    }
+  },
+  updateUbuntuChain(){
+    const s=State.get();
+    const strip=document.getElementById('ubuntu-chain-strip');
+    if(!strip) return;
+    const c=s.ubuntuChainCount;
+    if(c>0){
+      strip.className='show';
+      [1,2,3].forEach(n=>{
+        const d=document.getElementById('uc'+n);
+        if(d) d.classList.toggle('lit',n<=c);
+      });
+      const mult=document.getElementById('uc-mult');
+      if(mult) mult.textContent=s.ubuntuChainDouble?'×2 ACTIVE':'';
+    } else {
+      strip.className='';
+    }
+  },
+  hand(who){
+    const s=State.get();
+    const hand=who==='player'?s.playerHand:s.aiHand;
+    const el=document.getElementById(who==='player'?'player-hand':'ai-hand');
+    const cnt=document.getElementById(who==='player'?'p-hc':'ai-hc');
+    el.innerHTML='';
+    hand.forEach((card,i)=>{
+      const div=document.createElement('div');
+      if(who==='ai'){
+        div.className='card face-down';div.style.animationDelay=(i*.04)+'s';
+      } else {
+        const col=isRed(card.suit)?'red':'black';
+        const isDeclare=s.selHand===i;
+        const isContrib=s.selContribs.includes(i);
+        const isWild=card.id===s.wildCardId;
+        const isInkosi=card.suit==='♠'&&card.value===1;
+        const isLobola=s.lobolaMode&&s.lobolaHandIdx===i;
+        let cls=`card face-up ${col}`;
+        if(isDeclare) cls+=' sel';
+        if(isContrib) cls+=' contrib';
+        if(isWild) cls+=' wild-card';
+        if(isInkosi) cls+=' inkosi';
+        if(isLobola) cls+=' sel';
+        div.className=cls;
+        div.style.animationDelay=(i*.04)+'s';
+        div.addEventListener('click',()=>selectHand(i));
+        const vv=vl(card.value);
+        const badge=isDeclare?`<div class="card-badge declare-badge">KEEP</div>`
+          :isContrib?`<div class="card-badge contrib-badge">PLAY</div>`
+          :isWild?`<div class="card-badge wild-badge">WILD</div>`:isInkosi?`<div class="card-badge" style="background:#b8860b;color:#fff;font-size:5px">CHIEF</div>`:'';
+        div.innerHTML=`<div class="ctop"><div class="cv">${vv}</div><div class="cs">${card.suit}</div></div><div class="cc">${card.suit}</div><div class="cbot"><div class="cv">${vv}</div><div class="cs">${card.suit}</div></div>${badge}`;
+      }
+      el.appendChild(div);
+    });
+    if(cnt) cnt.textContent=hand.length;
+  },
+  table(){
+    const s=State.get(); const el=document.getElementById('table-area');
+    el.innerHTML='';
+    const capSet=new Set();
+    if(s.selHand!==null&&s.turn==='player'&&!s.selTable.length){
+      const hc=s.playerHand[s.selHand];
+      s.table.forEach((item,i)=>{
+        if(BuildEngine.validateCapture(hc,[item])) capSet.add(i);
+        if(item.type==='card'&&item.id===s.ghostCardId) capSet.add(i); // ghost always highlightable
+      });
+    }
+    s.table.forEach((item,idx)=>{
+      const isSel=s.selTable.includes(idx); const isCap=capSet.has(idx);
+      if(item.type==='card') el.appendChild(this.cardEl(item,idx,isSel,isCap));
+      else el.appendChild(this.buildEl(item,idx,isSel,isCap));
+    });
+    const n=s.table.length;
+    document.getElementById('tbl-ct').textContent=n?`${n} item${n!==1?'s':''}`:' Empty';
+  },
+  cardEl(card,idx,isSel,isCap){
+    const col=isRed(card.suit)?'red':'black';
+    const s=State.get();
+    const isWild=card.id===s.wildCardId;
+    const isInkosi=card.suit==='♠'&&card.value===1;
+    const isSacred=card.id===s.sacredCardId;
+    const isGhost=card.id===s.ghostCardId;
+    const isTrapped=card.id===s.trappedCardId;
+    const div=document.createElement('div');
+    let cls=`card face-up ${col}`;
+    if(isSel) cls+=' tsel';
+    if(isCap) cls+=' capturable';
+    if(isWild) cls+=' wild-card';
+    if(isInkosi) cls+=' inkosi';
+    if(isSacred) cls+=' sacred';
+    if(isGhost) cls+=' ghost-card';
+    if(isTrapped) cls+=' trapped-card';
+    div.className=cls;
+    div.style.animationDelay=(idx*.04)+'s';
+    div.addEventListener('click',()=>selectTable(idx));
+    const vv=vl(card.value);
+    const isBlesser=card.suit==='♦'&&card.value===5;
+    const badge=isWild?`<div class="card-badge wild-badge">WILD</div>`:isBlesser?`<div class="card-badge" style="background:#059669;color:#fff;font-size:5px">💰</div>`:'';
+    div.innerHTML=`<div class="ctop"><div class="cv">${vv}</div><div class="cs">${card.suit}</div></div><div class="cc">${card.suit}</div><div class="cbot"><div class="cv">${vv}</div><div class="cs">${card.suit}</div></div>${badge}`;
+    return div;
+  },
+  buildEl(build,idx,isSel,isCap){
+    const wrap=document.createElement('div');
+    const isAI=build.owner==='ai';
+    const s=State.get();
+    const isShielded=!isAI&&s.shieldActive;
+    const isGuarded=!isAI&&s.playerHand.some(c=>c.suit==='♠'&&c.value===1);
+    let cls='build-wrap';
+    if(isAI) cls+=' ai-own';
+    if(isSel) cls+=' tsel';
+    if(isCap) cls+=' capturable';
+    if(isShielded) cls+=' shielded';
+    if(isGuarded) cls+=' guarded';
+    if(build._new){cls+=' newly';setTimeout(()=>{build._new=false;},600);}
+    if(build._extending){setTimeout(()=>{build._extending=false;},600);}
+    wrap.className=cls;
+    wrap.addEventListener('click',()=>selectTable(idx));
+    const combosHTML=build.combinations.map(group=>{
+      const chips=group.map(c=>{
+        const col=isRed(c.suit)?'r':'b';
+        return `<span class="bchip ${col}">${vl(c.value)}${c.suit}</span>`;
+      }).join('<span class="chip-plus">+</span>');
+      return `<div class="bcombo">${chips}</div>`;
+    }).join('');
+    const total=build.cards.length;
+    const chainNote=s.ubuntuChainBuildId===build.id&&s.ubuntuChainCount>0?` 🤝${s.ubuntuChainCount}`:'';
+    wrap.innerHTML=`<div class="bv">${build.value}</div><div class="bowner ${isAI?'a':'p'}">${isAI?'ZOLA BUILD':'MY BUILD'}</div><div class="bcombos">${combosHTML}</div><div class="btotal">${total}c${isShielded?' 🛡':''}${isGuarded?' 👑':''}${chainNote}</div>`;
+    return wrap;
+  },
+  scoreboard(){
+    const s=State.get();
+    document.getElementById('p-score').textContent=s.playerScore;
+    document.getElementById('ai-score').textContent=s.aiScore;
+    document.getElementById('p-meta').textContent=`${s.playerCapture.length} cards · ${s.playerSweeps} sweeps`;
+    document.getElementById('ai-meta').textContent=`${s.aiCapture.length} cards · ${s.aiSweeps} sweeps`;
+    document.getElementById('p-score').className='sc-pts'+(s.turn==='player'?' lit':' dim');
+    document.getElementById('ai-score').className='sc-pts'+(s.turn==='ai'?' lit':' dim');
+    document.getElementById('coins-val').textContent=s.coins;
+  },
+  capturePiles(){
+    const s=State.get();
+    document.getElementById('p-hc').textContent=s.playerHand.length;
+    document.getElementById('ai-pile-ct').textContent=s.aiCapture.length+(s.selAiPile.length?` (${s.selAiPile.length}✓)`:'');
+    const btn=document.getElementById('ai-pile-btn');
+    if(btn) btn.className='pile-counter'+(s.selAiPile.length?' steal-mode':_aiPileOpen?' active':'');
+  },
+  turnBar(){
+    const s=State.get(); const el=document.getElementById('turn-bar'); const tx=document.getElementById('turn-text');
+    if(s.turn==='player'){el.className='pturn';tx.textContent='⚡ Your Turn';}
+    else{el.className='aiturn';tx.textContent='🤖 Zola is thinking…';}
+    const badge=el.querySelector('.r1-badge'); if(badge) badge.remove();
+    if(s.round===1&&s.turn==='player'){
+      const b=document.createElement('span');b.className='r1-badge';b.textContent='⚠ Round 1: No Builds';el.appendChild(b);
+    }
+  },
+  buttons(){
+    const s=State.get(); const v=s.v; const on=s.turn==='player'&&s.phase==='playing';
+    const hasHand=s.selHand!==null;
+    const tableCardCount=s.table.reduce((a,it)=>a+(it.type==='card'?1:it.cards.length),0);
+    const braaiBlock=tableCardCount>=8;
+    document.getElementById('btn-place').disabled=!(on&&hasHand&&v.canPlace&&!braaiBlock);
+    document.getElementById('btn-capture').disabled=!(on&&v.canCapture);
+    document.getElementById('btn-build').disabled=!(on&&v.canBuild&&s.round!==1);
+    document.getElementById('btn-extend').disabled=!(on&&v.canExtend);
+    document.getElementById('btn-undo').disabled=!(s._snapshot&&on);
+    const bBtn=document.getElementById('btn-build');
+    bBtn.textContent=(v.canBuild&&s.round===1)?'🏗 Build (R1)':v.canBuild?`🏗 Build ${v.buildVal}`:'🏗 Build';
+    // Vuvuzela styling
+    const capBtn=document.getElementById('btn-capture');
+    if(capBtn) capBtn.classList.toggle('vuvu-ready',s.vuvuzelaMode&&on);
+  },
+  hint(){
+    const s=State.get(); const v=s.v; const el=document.getElementById('hint');
+    const on=s.turn==='player'&&s.phase==='playing';
+    if(!on){el.textContent=s.turn==='ai'?'🤖 Zola is calculating…':'';return;}
+    if(s.lobolaMode){el.textContent=s.lobolaHandIdx!==null?'Now tap a TABLE card to complete the swap':'Tap a HAND card to select it for swapping';return;}
+    if(s.trapMode){el.textContent='Tap a TABLE card to place the Tokoloshe Trap 👺';return;}
+    if(s.selHand===null){el.textContent='Tap a hand card to declare its value';return;}
+    const hc=s.playerHand[s.selHand];
+    const contribs=s.selContribs.map(i=>s.playerHand[i]);
+    const hasAny=s.selTable.length>0||contribs.length>0;
+    if(!hasAny){el.textContent=`${vl(hc.value)}${hc.suit} declared — tap table cards or another hand card to PLAY`;return;}
+    const parts=[];
+    if(v.canCapture){
+      const ghostNote=s.selTable.length===1&&s.table[s.selTable[0]]?.id===s.ghostCardId?' 👻 Ghost!':'';
+      parts.push(`⚡ CAPTURE ready${ghostNote}${s.vuvuzelaMode?' 🎺 DOUBLE!':''}`);
+    }
+    if(v.canBuild&&s.round!==1){const gdesc=v.buildCombos.map(g=>g.map(c=>vl(c.value)+c.suit).join('+')).join(' | ');parts.push(`🏗 BUILD ${v.buildVal}: [${gdesc}]`);}
+    if(v.canBuild&&s.round===1) parts.push('🏗 Build blocked in Round 1');
+    if(v.canExtend){const gdesc=v.extCombos.map(g=>g.map(c=>vl(c.value)+c.suit).join('+')).join(' | ');parts.push(`➕ EXTEND ${v.extBuild.value}: [${gdesc}]`);}
+    if(!parts.length){
+      const tot=[...contribs,...s.selAiPile.map(i=>s.aiCapture[i]),...s.selTable.map(i=>s.table[i]).filter(x=>x&&x.type==='card')].reduce((a,c)=>a+(c.value||0),0);
+      parts.push(`Sum=${tot}, need ${hc.value}`);
+    }
+    el.textContent=parts.join(' · ');
+  },
+  renderAiPileSpread(){
+    const s=State.get(); const el=document.getElementById('ai-pile-cards');
+    if(!el) return; el.innerHTML='';
+    if(!s.aiCapture.length){el.innerHTML='<span style="font-size:10px;color:var(--dim2);padding:8px">Zola\'s pile is empty</span>';return;}
+    s.aiCapture.forEach((card,idx)=>{
+      const isSel=s.selAiPile.includes(idx); const col=isRed(card.suit)?'red':'black';
+      const div=document.createElement('div');
+      div.className=`card face-up ${col}${isSel?' pile-steal':''}`;
+      div.style.cssText='width:clamp(44px,9.5vw,60px);height:clamp(66px,14vw,88px);';
+      div.addEventListener('click',()=>selectAiPile(idx));
+      const vv=vl(card.value);
+      div.innerHTML=`<div class="ctop"><div class="cv" style="font-size:clamp(10px,2.2vw,13px)">${vv}</div><div class="cs" style="font-size:clamp(8px,1.6vw,10px)">${card.suit}</div></div><div class="cc" style="font-size:clamp(12px,2.8vw,16px)">${card.suit}</div><div class="cbot"><div class="cv" style="font-size:clamp(10px,2.2vw,13px)">${vv}</div><div class="cs" style="font-size:clamp(8px,1.6vw,10px)">${card.suit}</div></div>${isSel?'<div class="card-badge" style="background:var(--crim);color:#fff;font-size:5px">STEAL</div>':''}`;
+      el.appendChild(div);
+    });
+  },
+  showEnd(sc){
+    const s=State.get();
+    const pWin=sc.P.total>sc.A.total; const tie=sc.P.total===sc.A.total;
+    document.getElementById('end-icon').textContent=pWin?'🏆':tie?'🤝':'😞';
+    const titleEl=document.getElementById('end-title');
+    titleEl.textContent=pWin?'VICTORY!':tie?'TIE GAME':'ZOLA WINS';
+    titleEl.className='end-title '+(pWin?'win':tie?'tie':'lose');
+    document.getElementById('end-sub').textContent=pWin?`Hayibo! ${sc.P.total}–${sc.A.total}`:tie?`Both ${sc.P.total} — ukuqhasha!`:`Zola wins ${sc.A.total}–${sc.P.total}`;
+    const row=(lbl,pv,av)=>`<div class="erow"><span>${lbl}</span><span class="eval">${pv}</span><span class="eval">${av}</span></div>`;
+    document.getElementById('end-bd').innerHTML=`
+      <div class="erow hdr"><span>Category</span><span>You</span><span>Zola</span></div>
+      ${row(`Cards (${sc.P.cards} vs ${sc.A.cards})`,sc.P.cards>sc.A.cards?3:0,sc.A.cards>sc.P.cards?3:0)}
+      ${row('Most ♠ spades',sc.P.spades>sc.A.spades?1:0,sc.A.spades>sc.P.spades?1:0)}
+      ${row('Aces ×1',sc.P.aces,sc.A.aces)}
+      ${row('2♠ Big Casino',sc.P.twoS,sc.A.twoS)}
+      ${row('10♦ ×2',sc.P.tenD*2,sc.A.tenD*2)}
+      ${row('Sweeps',sc.P.sweeps,sc.A.sweeps)}
+      ${sc.P.inkosi?row('👑 Inkosi Bonus',sc.P.inkosi,0):''}
+      ${sc.P.ndlovu?row('🐘 Ndlovu Trophy',sc.P.ndlovu,0):''}
+      ${sc.P.lightning?row(`⚡ Lightning Builds (${sc.P.lightning})`,sc.P.lightning,0):''}
+      ${sc.P.blesser?row('💰 Blesser Card (5♦)',sc.P.blesser,0):''}
+      ${sc.P.chain?row('🤝 Ubuntu Chain ×2','✓','-'):''}
+      <div class="erow tot"><span>TOTAL</span><span>${sc.P.total}</span><span>${sc.A.total}</span></div>
+      ${sc.hustleCoins?`<div class="erow"><span>⚡ Township Hustle Coins</span><span>+${sc.hustleCoins}🪙</span><span></span></div>`:''}
+      ${sc.streakBonus?`<div class="erow"><span>🔥 Win Streak Bonus</span><span>+${sc.streakBonus}🪙</span><span></span></div>`:''}
+      <div class="erow coins-row"><span>Coins ${sc.delta>=0?'+':''}${sc.delta}</span><span>Wallet: ${s.coins}🪙</span><span></span></div>`;
+    openModal('end-modal');
+  }
+};
+
+/* ═══ MODULE 8 — SOUND ENGINE ═══ */
+const SoundEngine = {
+  _ctx:null,_master:null,_on:true,_unlocked:false,
+  _ac(){
+    if(!this._ctx){
+      this._ctx=new(window.AudioContext||window.webkitAudioContext)();
+      const comp=this._ctx.createDynamicsCompressor();
+      comp.threshold.value=-6;comp.knee.value=6;comp.ratio.value=4;comp.attack.value=0.003;comp.release.value=0.15;
+      this._master=this._ctx.createGain();this._master.gain.value=0.9;
+      comp.connect(this._master);this._master.connect(this._ctx.destination);
+    }
+    return this._ctx;
+  },
+  unlock(){if(this._unlocked) return;try{this._ac();if(this._ctx.state==='suspended') this._ctx.resume();this._unlocked=true;}catch(e){}},
+  toggle(){this._on=!this._on;const btn=document.getElementById('snd-btn');if(btn) btn.style.opacity=this._on?'1':'.4';},
+  _osc(freq,type,vol,dur,delaySec=0){
+    if(!this._on) return;
+    try{
+      const ac=this._ac();const t0=ac.currentTime+delaySec;
+      const o=ac.createOscillator();const g=ac.createGain();
+      o.type=type;o.frequency.value=freq;
+      g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(vol,t0+0.008);
+      g.gain.exponentialRampToValueAtTime(0.001,t0+dur);
+      o.connect(g);g.connect(this._master);
+      o.start(t0);o.stop(t0+dur+0.05);
+    }catch(e){}
+  },
+  _noise(vol,dur,freq=800,delaySec=0){
+    if(!this._on) return;
+    try{
+      const ac=this._ac();const t0=ac.currentTime+delaySec;
+      const buf=ac.createBuffer(1,Math.ceil(ac.sampleRate*dur),ac.sampleRate);
+      const d=buf.getChannelData(0);for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+      const src=ac.createBufferSource();const hp=ac.createBiquadFilter();const g=ac.createGain();
+      hp.type='highpass';hp.frequency.value=freq;
+      g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(vol,t0+0.008);
+      g.gain.exponentialRampToValueAtTime(0.001,t0+dur);
+      src.buffer=buf;src.connect(hp);hp.connect(g);g.connect(this._master);
+      src.start(t0);src.stop(t0+dur+0.05);
+    }catch(e){}
+  },
+  deal(){this._noise(.55,.09,1200);this._osc(300,'triangle',.35,.12,.05);},
+  select(){this._osc(880,'sine',.45,.08);},
+  capture(){this._noise(.7,.12,800);this._osc(660,'sine',.55,.15,.04);this._osc(880,'sine',.35,.1,.1);},
+  build(){[330,440,550,660,770].forEach((f,i)=>this._osc(f,'triangle',.5,.18,i*.06));},
+  extend(){this._osc(660,'sine',.4,.12);this._osc(990,'triangle',.3,.15,.07);},
+  steal(){this._osc(110,'sawtooth',.65,.35);this._osc(80,'sawtooth',.45,.25,.05);},
+  sweep(){this._osc(55,'sine',.9,.55);this._osc(110,'triangle',.7,.4,.06);this._noise(.65,.3,200,.1);},
+  coin(){this._osc(1320,'sine',.6,.18);this._osc(1760,'sine',.4,.12,.06);},
+  win(){[330,440,550,660,880,1100].forEach((f,i)=>this._osc(f,'sine',.5,.35,i*.1));},
+  lose(){[440,330,220,180].forEach((f,i)=>this._osc(f,'triangle',.4,.25,i*.1));},
+  placed(){this._noise(.4,.06,1500);},
+  powerup(){this._osc(550,'sine',.5,.1);this._osc(770,'sine',.4,.12,.06);this._osc(990,'sine',.3,.1,.12);},
+  dice(){[200,300,500].forEach((f,i)=>this._osc(f,'square',.4,.08,i*.05));}
+};
+
+/* ═══ MODULE 8b — PARTICLES ═══ */
+const Particles = {
+  _canvas:null,_ctx:null,_particles:[],_raf:null,
+  init(){
+    this._canvas=document.getElementById('particle-canvas');
+    if(!this._canvas) return;
+    this._canvas.width=window.innerWidth;this._canvas.height=window.innerHeight;
+    this._ctx=this._canvas.getContext('2d');
+    window.addEventListener('resize',()=>{if(this._canvas){this._canvas.width=window.innerWidth;this._canvas.height=window.innerHeight;}});
+  },
+  _loop(){
+    if(!this._ctx) return;
+    this._ctx.clearRect(0,0,this._canvas.width,this._canvas.height);
+    this._particles=this._particles.filter(p=>p.life>0);
+    for(const p of this._particles){
+      p.x+=p.vx;p.y+=p.vy;p.vy+=.15;p.vx*=.98;p.life--;
+      const alpha=Math.min(1,p.life/18);
+      this._ctx.save();this._ctx.globalAlpha=alpha;this._ctx.fillStyle=p.color;
+      this._ctx.beginPath();this._ctx.arc(p.x,p.y,p.r,0,Math.PI*2);this._ctx.fill();
+      this._ctx.restore();
+    }
+    if(this._particles.length>0) this._raf=requestAnimationFrame(()=>this._loop());
+    else this._raf=null;
+  },
+  _spawn(x,y,color,count,speed,life){
+    for(let i=0;i<count;i++){
+      const angle=Math.random()*Math.PI*2;const spd=speed*.5+Math.random()*speed;
+      this._particles.push({x,y,vx:Math.cos(angle)*spd,vy:Math.sin(angle)*spd-spd*.3,r:2+Math.random()*4,color,life:life+Math.random()*20});
+    }
+    if(!this._raf) this._loop();
+  },
+  sweep(){
+    const cx=window.innerWidth/2,cy=window.innerHeight/2;
+    this._spawn(cx,cy,'#f8d56a',70,12,60);this._spawn(cx,cy,'#c8942a',60,9,50);
+    this._spawn(cx,cy,'#ffffff',30,7,40);
+  },
+  capture(x,y){this._spawn(x||window.innerWidth/2,y||window.innerHeight*.6,'#22c55e',22,8,40);}
+};
+
+/* ═══ MODULE 8c — AI PERSONALITY ═══ */
+const AiPersonality = {
+  TAUNTS:{
+    capture:['Hawu! Those cards are mine now!','Aikona, you left them out in the open!','Ngiyabonga — thank you for the gift!','Zola takes what she needs 😏','Sharp sharp, those are captured!'],
+    build:['Building something beautiful here...','Eish, you won\'t capture this so easily!','My stack grows stronger, mfowethu!','Watch and learn — this is strategy!','Yebo! The foundation is laid.'],
+    sweep:['HAYI! Table cleared — sweep for Zola! 🔥','Yooo, the table is mine!','Inkosazana Zola sweeps again!','Eina! That\'s how we do it!','Clean as the Drakensberg air!'],
+    place:['Hm, let me think about this...','Ke bua nnete — placing for now.','Don\'t get too comfortable.','The board is shifting...','Ngifunda — I\'m learning your moves.'],
+    playerSweep:['Eish, well played! But don\'t celebrate yet.','Lucky sweep — I\'ll be back!','Okay, respect. But this isn\'t over.','Hayi, hayi, hayi... nicely done.','Yoh! You swept me. Next round is mine!'],
+    playerCapture:['Heyi, those were important cards!','You got lucky there, baba.','Okay. Points noted. Challenge accepted.','Yoh, strategic move! But watch me.','Fine. Take them. You\'ll regret it.']
+  },
+  say(category){
+    const pool=this.TAUNTS[category];if(!pool) return;
+    const msg=pool[Math.floor(Math.random()*pool.length)];
+    const el=document.getElementById('ai-taunt');if(!el) return;
+    el.textContent=msg;el.style.animation='none';void el.offsetWidth;el.style.animation='taunt-in .3s ease';
+    setTimeout(()=>{if(el.textContent===msg) el.textContent='';},4000);
+  }
+};
+
+/* ═══ MODULE 8d — COMBO SYSTEM ═══ */
+const ComboSystem = {
+  _streak:0,
+  add(){
+    this._streak++;
+    const s=State.get();
+    const sb=document.getElementById('streak-bar');
+    if(sb){
+      sb.innerHTML='';sb.className='streak-bar show';
+      for(let i=0;i<Math.min(this._streak,5);i++){
+        const d=document.createElement('div');d.className='streak-dot lit';sb.appendChild(d);
+      }
+    }
+    if(this._streak>=2){
+      const labels=['','','2× COMBO!','3× VUVUZELA! 🎺','4× FIRE! 🔥','5× UNSTOPPABLE!! 🔥🔥'];
+      const label=labels[Math.min(this._streak,labels.length-1)]||`${this._streak}× CHAIN!`;
+      const el=document.getElementById('combo-bar');
+      if(el){el.textContent=label;el.className='combo-bar show';}
+      SoundEngine.coin();
+      const colors=['#f8d56a','#22c55e','#fde047','#e73c3c','#f59e0b'];
+      this._pop(label,colors[Math.min(this._streak-2,colors.length-1)]);
+    }
+    Achievements.check('combo',this._streak);
+    Stats.data.totalCaptures++;
+  },
+  reset(){
+    this._streak=0;
+    const el=document.getElementById('combo-bar'); if(el) el.className='combo-bar';
+    const sb=document.getElementById('streak-bar'); if(sb) sb.innerHTML='';
+  },
+  _pop(label,color){
+    const layer=document.getElementById('score-pop-layer'); if(!layer) return;
+    const el=document.createElement('div');
+    el.className='score-pop';el.textContent=label;el.style.color=color;
+    el.style.left=(window.innerWidth*.5-60)+'px';el.style.top=(window.innerHeight*.45)+'px';
+    layer.appendChild(el);setTimeout(()=>el.remove(),1300);
+  }
+};
+
+/* ═══ MODULE 8e — EFFECTS ═══ */
+const Effects = {
+  _toastT:null,
+  toast(msg,type=''){
+    const el=document.getElementById('toast');if(!el) return;
+    el.textContent=msg;el.className=`toast show ${type}`;
+    if(this._toastT) clearTimeout(this._toastT);
+    this._toastT=setTimeout(()=>{el.className='toast';},2800);
+  },
+  sweep(who){
+    SoundEngine.sweep();Particles.sweep();
+    const el=document.getElementById('sweep-txt');if(!el) return;
+    el.textContent=who==='player'?'🧹 SWEEP!':'🤖 AI SWEEP';
+    el.className='sweep-txt boom';setTimeout(()=>{el.className='sweep-txt';},1000);
+    if(who==='player') AiPersonality.say('playerSweep');
+    else AiPersonality.say('sweep');
+    Stats.record('sweep');Achievements.check('sweep');
+    ComboSystem.reset();
+  },
+  capture(who){ SoundEngine.capture();Particles.capture(); },
+  aiCapture(){ SoundEngine.capture();AiPersonality.say('playerCapture'); },
+  buildCreated(who){ SoundEngine.build(); if(who==='player') ComboSystem.reset(); },
+  buildExtended(){ SoundEngine.extend(); },
+  placed(who){ SoundEngine.placed(); if(who==='player') ComboSystem.reset(); },
+  select(){ SoundEngine.select(); },
+  deal(){ SoundEngine.deal(); },
+  win(){ SoundEngine.win();Particles.sweep(); },
+  lose(){ SoundEngine.lose(); },
+  roundBanner(n){
+    const el=document.getElementById('round-banner');if(!el) return;
+    el.textContent=`— ROUND ${n} —`;el.className='round-banner flash';
+    setTimeout(()=>{el.className='round-banner';},1000);
+  },
+  deckLow(n){ if(n<=5) this.toast(`⚠ Only ${n} cards left in deck!`,'warn'); }
+};
+
+/* ═══ MODULE 9 — STATS ═══ */
+const Stats = {
+  data:{gamesPlayed:0,gamesWon:0,ties:0,totalCaptures:0,totalBuilds:0,totalSweeps:0},
+  record(action,result){
+    switch(action){
+      case 'gameEnd':
+        this.data.gamesPlayed++;
+        if(result==='win') this.data.gamesWon++;
+        else if(result==='tie') this.data.ties++;
+        break;
+      case 'capture': this.data.totalCaptures++;break;
+      case 'build': this.data.totalBuilds++;break;
+      case 'sweep': this.data.totalSweeps++;break;
+    }
+  },
+  winRate(){ if(!this.data.gamesPlayed) return 0; return Math.round(this.data.gamesWon/this.data.gamesPlayed*100); }
+};
+
+/* ═══ MODULE 10 — ACHIEVEMENTS ═══ */
+const Achievements = {
+  all:[
+    {id:'first_blood',icon:'🩸',name:'First Blood',desc:'Win your first game'},
+    {id:'clean_sweep',icon:'🧹',name:'Clean Sweep',desc:'Get 3 sweeps in one game'},
+    {id:'card_shark',icon:'🦈',name:'Card Shark',desc:'Capture 20 cards in one game'},
+    {id:'architect',icon:'🏛',name:'Architect',desc:'Create 5 builds in one game'},
+    {id:'combo_king',icon:'👑',name:'Combo King',desc:'Get a 4× combo streak'},
+    {id:'veteran',icon:'🎖',name:'Veteran',desc:'Play 10 games'},
+    {id:'flawless',icon:'💎',name:'Flawless',desc:'Win with 3+ more points'},
+    {id:'inkosi_rule',icon:'⚔',name:'Inkosi',desc:'Capture the Ace of Spades'},
+    {id:'ubuntu',icon:'🌍',name:'Ubuntu',desc:'Build with 5+ cards'},
+    {id:'thief',icon:'🫳',name:'The Thief',desc:'Steal from Zola\'s pile'},
+    {id:'sacred',icon:'🔮',name:'Sangoma',desc:'Capture 3 Sacred Cards'},
+    {id:'vuvuzela',icon:'🎺',name:'Vuvuzela!',desc:'Trigger Vuvuzela Mode'},
+    {id:'ndlovu',icon:'🐘',name:'Ndlovu',desc:'Collect all 4 tens in one game'},
+    {id:'ghost',icon:'👻',name:'Ghost Hunter',desc:'Capture the Ghost Card'},
+    {id:'blesser',icon:'💰',name:'Blesser',desc:'End game with 5♦ in your pile'},
+    {id:'ubuntu_chain',icon:'🤝',name:'Chain Gang',desc:'Extend a build 3 times in one game'},
+    {id:'eish',icon:'😤',name:'Eish!',desc:'Win an Eish counter-challenge'},
+    {id:'tokoloshe',icon:'👺',name:'Tokoloshe',desc:'Activate the Tokoloshe Trap'},
+  ],
+  unlocked:new Set(),
+  unlock(id){
+    if(this.unlocked.has(id)) return;
+    this.unlocked.add(id);
+    const ach=this.all.find(a=>a.id===id); if(!ach) return;
+    const icon=document.getElementById('an-icon');const name=document.getElementById('an-name');const desc=document.getElementById('an-desc');
+    const notif=document.getElementById('ach-notif');
+    if(icon) icon.textContent=ach.icon;
+    if(name) name.textContent=ach.name;
+    if(desc) desc.textContent=ach.desc;
+    if(notif){notif.className='ach-notif show';setTimeout(()=>{notif.className='ach-notif';},3500);}
+    SoundEngine.coin();
+    EventLog.add(`🏆 Achievement: ${ach.name}!`,'hot');
+  },
+  _buildCount:0,_sweepCount:0,_sacredCount:0,
+  check(event,val){
+    const s=State.get();
+    switch(event){
+      case 'capture': if(s.playerCapture.length>=20) this.unlock('card_shark'); break;
+      case 'build': this._buildCount++;if(this._buildCount>=5) this.unlock('architect'); break;
+      case 'sweep': this._sweepCount++;if(this._sweepCount>=3) this.unlock('clean_sweep'); break;
+      case 'combo': if(val>=4) this.unlock('combo_king'); break;
+      case 'inkosi': this.unlock('inkosi_rule'); break;
+      case 'ubuntu': this.unlock('ubuntu'); break;
+      case 'steal': this.unlock('thief'); break;
+      case 'sacred': this._sacredCount++;if(this._sacredCount>=3) this.unlock('sacred'); break;
+      case 'vuvuzela': this.unlock('vuvuzela'); break;
+      case 'ndlovu': this.unlock('ndlovu'); break;
+      case 'ghost': this.unlock('ghost'); break;
+      case 'blesser': this.unlock('blesser'); break;
+      case 'ubuntu_chain': this.unlock('ubuntu_chain'); break;
+      case 'eish': this.unlock('eish'); break;
+      case 'tokoloshe': this.unlock('tokoloshe'); break;
+    }
+    if(Stats.data.gamesPlayed>=10) this.unlock('veteran');
+  },
+  checkEnd(sc){
+    if(sc.P.total>sc.A.total){this.unlock('first_blood');if(sc.P.total-sc.A.total>=3) this.unlock('flawless');}
+    this._buildCount=0;this._sweepCount=0;
+  },
+  resetGame(){this._buildCount=0;this._sweepCount=0;}
+};
+
+/* ═══ MODULE 11 — POWER-UPS ═══ */
+const PowerUps = {used:{}};
+function usePowerUp(id){
+  const s=State.get();
+  if(PowerUps.used[id]){Effects.toast('Already used this power-up!','err');return;}
+  if(s.phase!=='playing'){Effects.toast('Game not in progress','err');return;}
+  if(s.turn!=='player'){Effects.toast('Only usable on your turn','err');return;}
+  const costs={peek:50,toyi:75,shield:60,braai:90,lobola:40,trap:65,sangoma:55};
+  const cost=costs[id]||0;
+  if(s.coins<cost){Effects.toast(`Need ${cost}🪙 — only have ${s.coins}🪙`,'err');return;}
+  s.coins-=cost;SoundEngine.powerup();
+  PowerUps.used[id]=true;
+  const btn=document.getElementById(`pu-${id}`); if(btn) btn.classList.add('used');
+  switch(id){
+    case 'peek': Effects.toast('🔮 Peeking at Zola\'s hand!','pow'); showPeek(); break;
+    case 'toyi': s.toyiActive=true; Effects.toast('✊ Toyi-Toyi! Zola must place her lowest card next turn.','pow'); break;
+    case 'shield': s.shieldActive=true; Effects.toast('🛡 Ubuntu Shield active — your builds are protected!','pow'); break;
+    case 'braai': s.braaiActive=true; Effects.toast('🍖 Braai Break called! Zola skips her next turn.','pow'); break;
+    case 'lobola':
+      s.lobolaMode=true;s.lobolaHandIdx=null;
+      Effects.toast('💍 Lobola Swap! Tap a hand card, then a table card to swap.','pow');
+      UILayer.renderNotices(); break;
+    case 'trap':
+      if(!s.table.some(i=>i.type==='card')){Effects.toast('No loose cards on table to trap!','err');s.coins+=cost;PowerUps.used[id]=false;btn?.classList.remove('used');return;}
+      s.trapMode=true;
+      Effects.toast('👺 Tokoloshe Trap! Tap a table card to place the trap.','pow');
+      UILayer.renderNotices(); break;
+    case 'sangoma':
+      V5Events.sangomaPeek(); break;
+  }
+  UILayer.render();
+}
+
+function showPeek(){
+  const s=State.get();
+  const overlay=document.getElementById('peek-overlay');
+  const cards=document.getElementById('peek-cards');
+  if(!overlay||!cards) return;
+  cards.innerHTML='';
+  s.aiHand.forEach(card=>{
+    const col=isRed(card.suit)?'red':'black';
+    const div=document.createElement('div');
+    div.className=`card face-up ${col}`;
+    div.style.cssText='animation:none;cursor:default;';
+    const vv=vl(card.value);
+    div.innerHTML=`<div class="ctop"><div class="cv">${vv}</div><div class="cs">${card.suit}</div></div><div class="cc">${card.suit}</div><div class="cbot"><div class="cv">${vv}</div><div class="cs">${card.suit}</div></div>`;
+    cards.appendChild(div);
+  });
+  overlay.className='peek-overlay show';
+  let count=3;
+  const timer=document.getElementById('peek-timer');
+  if(timer) timer.textContent=count;
+  const iv=setInterval(()=>{
+    count--;if(timer) timer.textContent=count;
+    if(count<=0){clearInterval(iv);overlay.className='peek-overlay';}
+  },1000);
+}
+
+/* ═══ MODULE 12 — V5 EVENTS ═══ */
+const V5Events = {
+  bonusPop(text,color){
+    const el=document.createElement('div');
+    el.className='bonus-pop';el.textContent=text;el.style.color=color;
+    el.style.textShadow=`0 0 20px ${color}`;
+    document.body.appendChild(el);setTimeout(()=>el.remove(),1700);
+  },
+  kasiDiceRoll(){
+    const s=State.get();
+    const faces=['⚀','⚁','⚂','⚃','⚄','⚅'];
+    const roll=Math.floor(Math.random()*6)+1;
+    const face=faces[roll-1];
+    s.kasiBonus=roll>=4?'player':'ai';
+    // Visual dice roll
+    const el=document.getElementById('kasi-roll');
+    if(el){
+      el.textContent=face;el.style.display='block';
+      setTimeout(()=>{el.style.display='none';},1200);
+    }
+    SoundEngine.dice();
+    const kr=document.getElementById('kasi-result');
+    if(kr){
+      kr.textContent=roll>=4?`🎲 ${face} HIGH — YOUR builds +1 this round!`:`🎲 ${face} LOW — ZOLA's builds +1 this round`;
+      kr.className=roll>=4?'player show':'ai show';
+      setTimeout(()=>{kr.className=roll>=4?'player':'ai';},3500);
+    }
+    EventLog.add(`🎲 Kasi Dice: ${face} (${roll}) — ${roll>=4?'Player':'Zola'} gets build bonus`);
+  },
+  townshipHustle(){
+    const s=State.get();
+    const tableCount=s.table.length;
+    if(tableCount<=0) return;
+    const bonus=tableCount;
+    s.hustleCoins+=bonus;
+    const hs=document.getElementById('hustle-strip');
+    const hv=document.getElementById('hustle-val');
+    if(hs) hs.className='show';
+    if(hv) hv.textContent=s.hustleCoins;
+    // Floating coin pop
+    const el=document.createElement('div');
+    el.className='hustle-pop';el.textContent=`⚡ +${bonus}🪙 Hustle!`;
+    el.style.top=(window.innerHeight*.55)+'px';el.style.left=(window.innerWidth/2-60)+'px';
+    document.body.appendChild(el);setTimeout(()=>el.remove(),1300);
+    EventLog.add(`⚡ Township Hustle: +${bonus} coins (${tableCount} table cards)`);
+  },
+  tokolosheActivate(){
+    const s=State.get();
+    if(s.aiCapture.length<2){Effects.toast('👺 Trap triggered! But AI pile too small.','warn');return;}
+    // Steal 2 cards from AI pile
+    const stolen=[];
+    for(let i=0;i<2&&s.aiCapture.length>0;i++){
+      const idx=Math.floor(Math.random()*s.aiCapture.length);
+      stolen.push(...s.aiCapture.splice(idx,1));
+    }
+    s.playerCapture.push(...stolen);
+    const names=stolen.map(c=>vl(c.value)+c.suit).join(', ');
+    Effects.toast(`👺 TOKOLOSHE TRAP! Stole ${names} from Zola!`,'warn');
+    V5Events.bonusPop('👺 TRAP!','#ef4444');
+    Particles.sweep();
+    Achievements.check('tokoloshe');
+    EventLog.add(`👺 Tokoloshe Trap activated! Stole ${names}`,'hot');
+    UILayer.render();
+  },
+  sangomaPeek(){
+    const s=State.get();
+    if(s.deck.length<2){Effects.toast('🌿 Not enough cards in deck!','err');return;}
+    const card1=s.deck[s.deck.length-1];
+    const card2=s.deck[s.deck.length-2];
+    Effects.toast(`🌿 Sangoma Vision: Top cards are ${vl(card1.value)}${card1.suit} and ${vl(card2.value)}${card2.suit}!`,'pow');
+    EventLog.add(`🌿 Sangoma: Next cards = ${vl(card1.value)}${card1.suit}, ${vl(card2.value)}${card2.suit}`,'hot');
+    // Optionally flip them face up to table
+    s.deck.pop();s.deck.pop();
+    s.table.push(card1);s.table.push(card2);
+    UILayer.render();
+  }
+};
+
+/* ═══ MODULE 13 — EISH COUNTER ═══ */
+const EishCounter = {
+  _iv:null,
+  activate(){
+    const s=State.get();
+    if(s.phase!=='playing') return;
+    const wrap=document.getElementById('eish-wrap');
+    const count=document.getElementById('eish-count');
+    if(!wrap) return;
+    wrap.className='show';
+    let t=5;if(count) count.textContent=t;
+    this._iv=setInterval(()=>{
+      t--;if(count) count.textContent=t;
+      if(t<=0){clearInterval(this._iv);this._iv=null;wrap.className='';}
+    },1000);
+  },
+  deactivate(){
+    if(this._iv){clearInterval(this._iv);this._iv=null;}
+    const wrap=document.getElementById('eish-wrap');
+    if(wrap) wrap.className='';
+  }
+};
+
+function triggerEish(){
+  EishCounter.deactivate();
+  SoundEngine.powerup();
+  const win=Math.random()<.5;
+  if(win){
+    const s=State.get();
+    s.aiSweeps=Math.max(0,s.aiSweeps-1);
+    V5Events.bonusPop('😤 EISH! Sweep cancelled!','#f87171');
+    Effects.toast('😤 EISH! Challenge won — Zola\'s sweep is cancelled!','warn');
+    Particles.sweep();
+    Achievements.check('eish');
+    EventLog.add('😤 EISH! AI sweep successfully challenged!','hot');
+  } else {
+    Effects.toast('😤 EISH! Challenge failed — Zola keeps the sweep','err');
+    EventLog.add('😤 EISH! Challenge failed');
+  }
+  UILayer.render();
+}
+
+/* ═══ MODULE 14 — EVENT LOG ═══ */
+const EventLog = {
+  _entries:[],
+  add(msg,type=''){
+    this._entries.unshift({msg,type});
+    if(this._entries.length>10) this._entries.pop();
+    this._render();
+  },
+  _render(){
+    const el=document.getElementById('event-log');if(!el) return;
+    el.innerHTML=this._entries.map(e=>`<div class="evlog${e.type==='hot'?' hot':''}">${e.msg}</div>`).join('');
+  }
+};
+
+function toggleLog(){
+  const el=document.getElementById('event-log');
+  const btn=document.getElementById('log-toggle');
+  if(!el) return;
+  const open=el.classList.toggle('open');
+  if(btn) btn.textContent=open?'▴ event log':'▾ event log';
+}
+
+/* ═══ MODULE 15 — V5 STATS ═══ */
+const V5Stats = {
+  streak:0,
+  updateStreak(won){
+    if(won){
+      this.streak++;
+      const el=document.getElementById('win-streak');
+      if(this.streak>=2&&el){
+        el.className='show';
+        el.innerHTML=`🔥 ${this.streak}-game win streak! ${this.streak>=3?'+50🪙 bonus!':''}`;
+      }
+      Achievements.check('streak',this.streak);
+    } else {
+      this.streak=0;
+      const el=document.getElementById('win-streak');if(el) el.className='';
+    }
+  }
+};
+
+/* ═══ MODAL HELPERS ═══ */
+function openModal(id){const el=document.getElementById(id);if(el) el.className='modal-overlay open';}
+function closeModal(id){const el=document.getElementById(id);if(el) el.className='modal-overlay';}
+
+function openStatsModal(){
+  const body=document.getElementById('stats-body');if(!body) return;
+  const wr=Stats.winRate();
+  body.innerHTML=`
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val">${Stats.data.gamesPlayed}</div><div class="stat-lbl">Games Played</div></div>
+      <div class="stat-card"><div class="stat-val">${Stats.data.gamesWon}</div><div class="stat-lbl">Games Won</div></div>
+      <div class="stat-card"><div class="stat-val">${wr}%</div><div class="stat-lbl">Win Rate</div></div>
+      <div class="stat-card"><div class="stat-val">${Stats.data.totalCaptures}</div><div class="stat-lbl">Total Captures</div></div>
+      <div class="stat-card"><div class="stat-val">${Stats.data.totalBuilds}</div><div class="stat-lbl">Builds Made</div></div>
+      <div class="stat-card"><div class="stat-val">${Stats.data.totalSweeps}</div><div class="stat-lbl">Sweeps</div></div>
+    </div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold2);margin-bottom:8px;padding-bottom:3px;border-bottom:1px solid rgba(200,148,42,.2);">🏆 Achievements</div>
+    <div class="ach-grid">
+      ${Achievements.all.map(a=>{
+        const locked=!Achievements.unlocked.has(a.id);
+        return `<div class="ach-card${locked?'':' unlocked'}">
+          <div class="ach-icon">${locked?'🔒':a.icon}</div>
+          <div class="ach-name">${a.name}</div>
+          <div class="ach-desc">${a.desc}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  openModal('stats-modal');
+}
+
+function openViewAll(){
+  const s=State.get();
+  const grid=document.getElementById('view-all-grid');if(!grid) return;
+  grid.innerHTML='';
+  s.playerHand.forEach((card,i)=>{
+    const col=isRed(card.suit)?'red':'black';
+    const isDeclare=s.selHand===i;const isContrib=s.selContribs.includes(i);
+    const isWild=card.id===s.wildCardId;const isInkosi=card.suit==='♠'&&card.value===1;
+    let cls=`card face-up ${col}`;
+    if(isDeclare) cls+=' sel';if(isContrib) cls+=' contrib';if(isWild) cls+=' wild-card';if(isInkosi) cls+=' inkosi';
+    const div=document.createElement('div');
+    div.className=cls;div.style.cssText='animation:none;width:62px;height:92px;';
+    div.addEventListener('click',()=>{selectHand(i);UILayer.render();const g2=document.getElementById('view-all-grid');if(g2) openViewAll();});
+    const vv=vl(card.value);
+    const badge=isDeclare?'<div class="card-badge declare-badge">KEEP</div>':isContrib?'<div class="card-badge contrib-badge">PLAY</div>':isWild?'<div class="card-badge wild-badge">WILD</div>':'';
+    div.innerHTML=`<div class="ctop"><div class="cv">${vv}</div><div class="cs">${card.suit}</div></div><div class="cc">${card.suit}</div><div class="cbot"><div class="cv">${vv}</div><div class="cs">${card.suit}</div></div>${badge}`;
+    grid.appendChild(div);
+  });
+  openModal('view-all-modal');
+}
+
+/* ═══ GAME FLOW ═══ */
+let _aiPileOpenFlag=false;
+let _coinDone=false;
+let _firstPlayer='player';
+
+function flipCoin(){
+  if(_coinDone) return;
+  const wrap=document.getElementById('coin-wrap');
+  const result=document.getElementById('coin-result');
+  if(!wrap||!result) return;
+  SoundEngine.unlock();SoundEngine.coin();
+  wrap.className='flipping';
+  setTimeout(()=>{
+    _coinDone=true;
+    const outcome=Math.random()<.5?'heads':'tails';
+    _firstPlayer=outcome==='heads'?'player':'ai';
+    const icon=outcome==='heads'?'👑':'🦅';
+    const who=_firstPlayer==='player'?'🎯 YOU go first!':'🤖 Zola goes first!';
+    wrap.className='';wrap.textContent=icon;
+    result.innerHTML=`<span class="coin-result-icon">${icon}</span>${who}`;
+    const sb=document.getElementById('start-btn');if(sb) sb.className='start-btn show';
+  },1600);
+}
+
+function startGame(firstPlayer){
+  const overlay=document.getElementById('coin-overlay');
+  if(overlay) overlay.className='coin-overlay hidden';
+  Particles.init();
+  PowerUps.used={};
+  ['peek','toyi','shield','braai','lobola','trap','sangoma'].forEach(id=>{
+    const btn=document.getElementById(`pu-${id}`); if(btn) btn.classList.remove('used');
+  });
+  Achievements.resetGame();
+  ComboSystem.reset();
+  // Reset v5 UI
+  const el=n=>document.getElementById(n);
+  el('vuvu-banner')?.classList.remove('show');
+  el('lightning-strip')?.classList.remove('show');
+  el('eish-wrap')?.classList.remove('show');
+  el('hustle-strip')?.classList.remove('show');
+  el('hustle-val')&&(el('hustle-val').textContent='0');
+  el('ubuntu-chain-strip')?.classList.remove('show');
+  el('win-streak')?.classList.remove('show');
+  el('kasi-result')?.classList.remove('show','player','ai');
+  document.body.classList.remove('lightning');
+  EventLog._entries=[];EventLog._render();
+  GameEngine.startNew(firstPlayer||'player');
+  UILayer.render();
+  if(State.get().turn==='ai') setTimeout(()=>AIEngine.takeTurn(),960);
+}
+
+function newGame(){
+  _coinDone=false;_firstPlayer='player';
+  EishCounter.deactivate();
+  const overlay=document.getElementById('coin-overlay');if(overlay) overlay.className='coin-overlay';
+  const wrap=document.getElementById('coin-wrap');if(wrap){wrap.className='';wrap.textContent='🪙';}
+  const result=document.getElementById('coin-result');if(result) result.innerHTML='';
+  const sb=document.getElementById('start-btn');if(sb) sb.className='start-btn';
+}
+
+function setDiff(d){
+  State.get().diff=d;
+  ['easy','medium','hard'].forEach(x=>{
+    const btn=document.querySelector(`.diff-btn.d-${x}`);
+    if(btn) btn.classList.toggle('active',x===d);
+  });
+}
+
+function toggleAiPile(){
+  _aiPileOpen=!_aiPileOpen;
+  const spread=document.getElementById('ai-pile-spread');
+  if(spread) spread.className='ai-pile-spread'+(_aiPileOpen?' open':'');
+  if(_aiPileOpen) UILayer.renderAiPileSpread();
+  UILayer.capturePiles();
+}
+
+function selectAiPile(idx){
+  const s=State.get();
+  if(s.turn!=='player'||s.phase!=='playing') return;
+  const pos=s.selAiPile.indexOf(idx);
+  if(pos!==-1) s.selAiPile.splice(pos,1);
+  else{s.selAiPile.push(idx);Achievements.check('steal');}
+  revalidate();UILayer.render();UILayer.renderAiPileSpread();
+}
+
+function doUndo(){
+  const s=State.get();
+  if(!s._snapshot) return;
+  State.restore();clearSel();UILayer.render();Effects.toast('↩ Move undone','info');
+}
+
+function toggleMusic(){
+  const panel=document.getElementById('music-panel');
+  const btn=document.getElementById('music-toggle');
+  const iframe=document.getElementById('music-iframe');
+  if(!panel) return;
+  const open=panel.classList.toggle('open');
+  if(btn) btn.textContent=open?'♫ Now Playing':'♫ Deep House Playlist';
+  if(iframe&&open&&!iframe.src) iframe.src='https://embed.music.apple.com/za/playlist/me/pl.u-r2yB142FeD0Pz4q';
+}
+
+
+/* ═══ ADS MODULE ═══ */
+const Ads = {
+  _rewardTimer: null,
+  showRewardAd(onComplete){
+    const overlay = document.getElementById('reward-overlay');
+    const skip = document.getElementById('reward-skip');
+    const countdown = document.getElementById('reward-countdown');
+    if(!overlay) return;
+    overlay.className = 'show';
+    let t = 5;
+    if(countdown) countdown.textContent = t;
+    if(skip) skip.className = '';
+    this._rewardTimer = setInterval(() => {
+      t--;
+      if(countdown) countdown.textContent = t;
+      if(t <= 0){
+        clearInterval(this._rewardTimer);
+        if(skip) skip.className = 'show';
+        if(countdown) countdown.textContent = '✓';
+        // Auto-give reward after watching
+        setTimeout(() => {
+          if(onComplete) onComplete();
+          overlay.className = '';
+        }, 1000);
+      }
+    }, 1000);
+    // Store callback
+    this._onComplete = onComplete;
+  },
+  giveReward(){
+    const s = State.get();
+    s.coins += 200;
+    Effects.toast('🎉 +200🪙 reward earned!', 'ok');
+    UILayer.render();
+  }
+};
+
+let _rewardCallback = null;
+
+function closeRewardAd(earned){
+  clearInterval(Ads._rewardTimer);
+  const overlay = document.getElementById('reward-overlay');
+  if(overlay) overlay.className = '';
+  if(earned && Ads._onComplete) Ads._onComplete();
+}
+
+function watchAdForCoins(){
+  const s = State.get();
+  if(s.noAds){ Effects.toast('Ads disabled — enjoy the game!', 'ok'); return; }
+  Ads.showRewardAd(() => Ads.giveReward());
+}
+
+function purchaseNoAds(){
+  const s = State.get();
+  if(s.coins < 2000){ Effects.toast('Need 2000🪙 to remove ads', 'err'); return; }
+  s.coins -= 2000;
+  s.noAds = true;
+  // Hide ad slots
+  ['ad-top','ad-bottom'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = 'none';
+  });
+  document.getElementById('reward-overlay')?.classList.remove('show');
+  Effects.toast('✨ Ads removed! Enjoy Mzansi Shuffle ad-free!', 'warn');
+  UILayer.render();
+}
+
+// Show reward ad offer between games (after endGame)
+const _origEndGame = GameEngine.endGame.bind(GameEngine);
+GameEngine.endGame = function(){
+  _origEndGame();
+  const s = State.get();
+  if(!s.noAds && Stats.data.gamesPlayed > 0 && Stats.data.gamesPlayed % 2 === 0){
+    setTimeout(() => {
+      Effects.toast('💡 Watch an ad to earn 200🪙!', 'info');
+    }, 3500);
+  }
+};
+
+document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+  overlay.addEventListener('click',e=>{if(e.target===overlay) closeModal(overlay.id);});
+});
+
+</script>
+
+<div id="reward-overlay">
+  <div id="reward-ad-box">
+    <div id="reward-title">Watch a short ad to earn 200🪙</div>
+    <!-- AdSense Interstitial / Rewarded -->
+    <ins class="adsbygoogle"
+       style="display:block;width:300px;height:250px;margin:0 auto;"
+       data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
+       data-ad-slot="3333333333"
+       data-ad-format="auto"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    <div id="reward-countdown">5</div>
+    <button id="reward-skip" onclick="closeRewardAd(false)">Skip</button>
+    <div style="margin-top:8px">
+      <button class="no-ads-btn" onclick="purchaseNoAds()">Remove Ads — 2000🪙</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="ad-bottom">
+  <!-- AdSense Anchor 320x50 -->
+  <ins class="adsbygoogle"
+     style="display:inline-block;width:320px;height:50px"
+     data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
+     data-ad-slot="2222222222"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+</body>
+</html>
